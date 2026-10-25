@@ -309,8 +309,49 @@ table.vr-table{width:100%;border-collapse:collapse;font-size:14px;color:#222;min
   const lastUpdatedEl = document.getElementById('lastUpdated');
   let allNominees = [];
 
+  const ALL = '__all';
+
+  function rowHtml(n, rank, topVotes, showCat){
+    const votes = n.votes || 0;
+    // Progress = this nominee's votes as a share of their category leader's votes (leader = 100%).
+    const pct = topVotes > 0 ? (votes / topVotes) * 100 : 0;
+    const pctTxt = pct.toFixed(1) + '%';
+    return `<tr>
+      <td>${rank}</td>
+      <td>${photoHtml(n)}</td>
+      <td class="c-name">${esc(n.name)} ( ${esc(n.school || '')} )${showCat ? '<div style="font-size:12px;color:#00418a;margin-top:2px;">' + esc(n.category) + '</div>' : ''}</td>
+      <td>${n.naloCode ? esc(n.naloCode) : '<span style="opacity:.5">Pending</span>'}</td>
+      <td>${votes.toLocaleString()}</td>
+      <td><div class="vr-bar ${pct < 30 ? 'low' : ''}"><i style="width:${pct.toFixed(1)}%"></i><b>${pctTxt}</b></div></td>
+    </tr>`;
+  }
+
   function renderTable(){
     const cat = catSelect.value;
+
+    // ALL CATEGORIES: every nominee, grouped by category, ranked by votes inside each category.
+    if (cat === ALL) {
+      if (allNominees.length === 0) {
+        leaderBanner.className = 'vr-leader none';
+        leaderBanner.textContent = 'No nominees registered yet.';
+        resultsBody.innerHTML = '<tr><td colspan="6" class="empty">No nominees registered yet.</td></tr>';
+        return;
+      }
+      leaderBanner.className = 'vr-leader none';
+      leaderBanner.textContent = 'Showing all ' + allNominees.length + ' nominees across every category.';
+      const order = CATEGORIES.concat(allNominees.map(n => n.category).filter(c => CATEGORIES.indexOf(c) === -1));
+      let html = '';
+      order.filter((c, i) => order.indexOf(c) === i).forEach(c => {
+        const list = allNominees.filter(n => n.category === c).sort(byVotesDesc);
+        if (!list.length) return;
+        const topVotes = list[0].votes || 0;
+        html += `<tr><td colspan="6" style="background:#e8eef7;color:#00264d;font-weight:700;text-align:left;padding:9px 10px;">${esc(c)} <span style="font-weight:400;opacity:.7;">(${list.length})</span></td></tr>`;
+        html += list.map((n, i) => rowHtml(n, i + 1, topVotes, false)).join('');
+      });
+      resultsBody.innerHTML = html;
+      return;
+    }
+
     const list = allNominees.filter(n => n.category === cat).sort(byVotesDesc);
 
     if (list.length === 0) {
@@ -333,20 +374,7 @@ table.vr-table{width:100%;border-collapse:collapse;font-size:14px;color:#222;min
       leaderBanner.textContent = 'No votes recorded yet in this category.';
     }
 
-    resultsBody.innerHTML = list.map((n, i) => {
-      const votes = n.votes || 0;
-      // Progress = this nominee's votes as a share of the leader's votes (leader = 100%).
-      const pct = topVotes > 0 ? (votes / topVotes) * 100 : 0;
-      const pctTxt = pct.toFixed(1) + '%';
-      return `<tr>
-        <td>${i + 1}</td>
-        <td>${photoHtml(n)}</td>
-        <td class="c-name">${esc(n.name)} ( ${esc(n.school || '')} )</td>
-        <td>${n.naloCode ? esc(n.naloCode) : '<span style="opacity:.5">Pending</span>'}</td>
-        <td>${votes.toLocaleString()}</td>
-        <td><div class="vr-bar ${pct < 30 ? 'low' : ''}"><i style="width:${pct.toFixed(1)}%"></i><b>${pctTxt}</b></div></td>
-      </tr>`;
-    }).join('');
+    resultsBody.innerHTML = list.map((n, i) => rowHtml(n, i + 1, topVotes, false)).join('');
   }
 
   function buildCategoryList(){
@@ -354,8 +382,9 @@ table.vr-table{width:100%;border-collapse:collapse;font-size:14px;color:#222;min
     // Only list categories that actually have nominees.
     const active = CATEGORIES.filter(c => allNominees.some(n => n.category === c));
     const cats = active.length ? active : CATEGORIES;
-    catSelect.innerHTML = cats.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
-    if (prev && cats.indexOf(prev) !== -1) catSelect.value = prev;
+    catSelect.innerHTML = `<option value="${ALL}">All categories (every nominee)</option>` + cats.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+    if (prev && (prev === ALL || cats.indexOf(prev) !== -1)) catSelect.value = prev;
+    else catSelect.value = ALL;
   }
 
   async function loadRecords(first){
