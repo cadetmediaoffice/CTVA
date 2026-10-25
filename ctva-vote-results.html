@@ -244,14 +244,53 @@ table.vr-table{width:100%;border-collapse:collapse;font-size:14px;color:#222;min
     ];
   }
   function photoSrc(url){ const id = photoId(url); return id ? photoCandidates(id)[0] : ''; }
+  // Last resort: ask the Apps Script backend for the photo straight from Drive.
+  // Requests are queued and sent in small batches so a page of photos is only a few calls.
+  const photoCache = {};
+  let photoQueue = {};
+  let photoTimer = null;
+  function backendPhoto(id){
+    return new Promise(resolve => {
+      if (photoCache[id]) return resolve(photoCache[id]);
+      (photoQueue[id] = photoQueue[id] || []).push(resolve);
+      clearTimeout(photoTimer);
+      photoTimer = setTimeout(flushPhotos, 80);
+    });
+  }
+  async function flushPhotos(){
+    const jobs = photoQueue; photoQueue = {};
+    const ids = Object.keys(jobs);
+    for (let i = 0; i < ids.length; i += 10) {
+      const batch = ids.slice(i, i + 10);
+      let photos = {};
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action: 'getPhotos', ids: batch })
+        });
+        const data = await res.json();
+        photos = data.photos || {};
+      } catch (e) {}
+      batch.forEach(id => {
+        const url = photos[id] || '';
+        if (url) photoCache[id] = url;
+        jobs[id].forEach(r => r(url));
+      });
+    }
+  }
   window.photoFail = function(img){
     const id = img.dataset.id, step = Number(img.dataset.step || 0) + 1;
     const list = photoCandidates(id);
     if (step < list.length) { img.dataset.step = step; img.src = list[step]; return; }
-    const ph = document.createElement('div');
-    ph.className = img.dataset.cls + ' ph';
-    ph.textContent = img.dataset.letter;
-    img.replaceWith(ph);
+    img.onerror = null;
+    backendPhoto(id).then(url => {
+      if (url) { img.src = url; return; }
+      const ph = document.createElement('div');
+      ph.className = img.dataset.cls + ' ph';
+      ph.textContent = img.dataset.letter;
+      img.replaceWith(ph);
+    });
   };
   function photoHtml(n){
     const letter = (n.name || '?').trim().charAt(0).toUpperCase();
