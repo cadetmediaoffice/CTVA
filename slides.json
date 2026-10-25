@@ -1,5 +1,15 @@
 [
  {
+  "src": "intro-01.jpg",
+  "caption": "Cadet TV Personality Awards 2025",
+  "fit": "cover"
+ },
+ {
+  "src": "intro-02.jpg",
+  "caption": "Cadet TV Personality Awards 2025, organised by Cadet Media Ghana",
+  "fit": "contain"
+ },
+ {
   "src": "safety-01.jpg",
   "caption": "Safety Segment",
   "fit": "cover"
@@ -57,6 +67,81 @@
  {
   "src": "safety-12.jpg",
   "caption": "Safety Segment",
+  "fit": "cover"
+ },
+ {
+  "src": "ceremony-01.jpg",
+  "caption": "Cadets with officers and mentors on the CTVA 2025 stage",
+  "fit": "cover"
+ },
+ {
+  "src": "ceremony-02.jpg",
+  "caption": "Cadets with officers and mentors on the CTVA 2025 stage",
+  "fit": "cover"
+ },
+ {
+  "src": "ceremony-03.jpg",
+  "caption": "Cadets with officers and mentors on the CTVA 2025 stage",
+  "fit": "cover"
+ },
+ {
+  "src": "ceremony-04.jpg",
+  "caption": "Host Cdt. S.U.O Firdaus Osuman at the Competition Phase",
+  "fit": "cover"
+ },
+ {
+  "src": "ceremony-05.jpg",
+  "caption": "Cadet Naa Marion, International News Anchor, Covenant Presbyterian School",
+  "fit": "cover"
+ },
+ {
+  "src": "ceremony-06.jpg",
+  "caption": "Cadet Akosua Baa Asare, Local News Anchor, Covenant Presbyterian School",
+  "fit": "cover"
+ },
+ {
+  "src": "ceremony-07.jpg",
+  "caption": "Anchors from Blessed Home School & Crèche on air",
+  "fit": "cover"
+ },
+ {
+  "src": "ceremony-08.jpg",
+  "caption": "The four Covenant Presbyterian anchors with host Cdt. S.U.O Firdaus Osuman, Captain Nicholas Appiagyei and ADO1 Leticia A. Akaadiini",
+  "fit": "cover"
+ },
+ {
+  "src": "ceremony-09.jpg",
+  "caption": "ADO1 Leticia A. Akaadiini of the Fire Service shares fire safety information",
+  "fit": "cover"
+ },
+ {
+  "src": "ceremony-10.jpg",
+  "caption": "Officials at the awards presentation ceremony",
+  "fit": "cover"
+ },
+ {
+  "src": "ceremony-11.jpg",
+  "caption": "Awards presentation ceremony with fire service officials and cadets",
+  "fit": "cover"
+ },
+ {
+  "src": "ceremony-12.jpg",
+  "caption": "Awards presentation ceremony with fire service officials and cadets",
+  "fit": "cover"
+ },
+ {
+  "src": "ceremony-13.jpg",
+  "caption": "Awards presentation ceremony with fire service officials and cadets",
+  "fit": "cover"
+ },
+ {
+  "src": "ceremony-14.jpg",
+  "caption": "Awards presentation ceremony with fire service officials and cadets",
+  "fit": "cover"
+ },
+ {
+  "src": "ceremony-15.jpg",
+  "caption": "Cadet Makafui Gbafah receives her award from a fire service officer",
   "fit": "cover"
  },
  {
