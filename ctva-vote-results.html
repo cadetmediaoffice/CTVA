@@ -229,17 +229,36 @@ table.vr-table{width:100%;border-collapse:collapse;font-size:14px;color:#222;min
   // Safe text, so a student's name can never inject HTML into the page.
   function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
   // Drive saves a "view" link (a web page, not an image); turn it into a real image address.
-  function photoSrc(url){
+  // Google can serve the same Drive file from several image addresses, and which one works
+  // depends on the file. Try them in turn; only if all fail do we show the student's initial.
+  function photoId(url){
     if (!url || String(url).indexOf('ERROR') === 0) return '';
     const m = String(url).match(/\/d\/([\w-]+)/) || String(url).match(/[?&]id=([\w-]+)/);
-    return m ? 'https://drive.google.com/thumbnail?id=' + m[1] + '&sz=w200' : String(url);
+    return m ? m[1] : '';
   }
+  function photoCandidates(id){
+    return [
+      'https://lh3.googleusercontent.com/d/' + id + '=w200',
+      'https://drive.google.com/thumbnail?id=' + id + '&sz=w200',
+      'https://drive.google.com/uc?export=view&id=' + id
+    ];
+  }
+  function photoSrc(url){ const id = photoId(url); return id ? photoCandidates(id)[0] : ''; }
+  window.photoFail = function(img){
+    const id = img.dataset.id, step = Number(img.dataset.step || 0) + 1;
+    const list = photoCandidates(id);
+    if (step < list.length) { img.dataset.step = step; img.src = list[step]; return; }
+    const ph = document.createElement('div');
+    ph.className = img.dataset.cls + ' ph';
+    ph.textContent = img.dataset.letter;
+    img.replaceWith(ph);
+  };
   function photoHtml(n){
-    const letter = esc((n.name || '?').trim().charAt(0).toUpperCase());
-    const src = photoSrc(n.photoUrl);
-    if (!src) return `<div class="vr-photo ph">${letter}</div>`;
-    return `<img class="vr-photo" src="${esc(src)}" alt="${esc(n.name)}" loading="lazy" referrerpolicy="no-referrer"
-      onerror="this.outerHTML='<div class=&quot;vr-photo ph&quot;>${letter}</div>'">`;
+    const letter = (n.name || '?').trim().charAt(0).toUpperCase();
+    const id = photoId(n.photoUrl);
+    if (!id) return `<div class="vr-photo ph">${esc(letter)}</div>`;
+    return `<img class="vr-photo" src="${esc(photoCandidates(id)[0])}" alt="${esc(n.name)}" loading="lazy" referrerpolicy="no-referrer"
+      data-id="${esc(id)}" data-step="0" data-cls="vr-photo" data-letter="${esc(letter)}" onerror="photoFail(this)">`;
   }
   // Highest votes first; ties fall back to name so the order is stable.
   function byVotesDesc(a, b){ return (b.votes || 0) - (a.votes || 0) || String(a.name).localeCompare(String(b.name)); }
