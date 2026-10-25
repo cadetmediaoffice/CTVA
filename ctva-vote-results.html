@@ -41,21 +41,7 @@ a{color:inherit;}
 .nav-links a.nav-register{background:linear-gradient(45deg,#FFD700,#e6a800);color:#0f3460;font-weight:800;}
 .nav-links a.nav-register:hover{opacity:.9;background:linear-gradient(45deg,#FFD700,#e6a800);}
 
-/* PAGE HEADER */
-.page-hero{max-width:1000px;margin:0 auto;padding:40px 20px 10px;text-align:center;}
-.badge{
-  display:inline-flex;align-items:center;gap:8px;font-size:11.5px;letter-spacing:2px;
-  color:#FFD700;border:1px solid rgba(255,215,0,0.4);border-radius:20px;padding:5px 14px;
-  margin-bottom:16px;text-transform:uppercase;font-weight:700;
-}
-.page-hero h1{
-  font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:.5px;
-  font-size:clamp(26px,6vw,44px);line-height:1.1;text-transform:uppercase;
-}
-.page-hero h1 span{color:#FFD700;}
-.page-hero .sub{opacity:.68;margin-top:12px;font-size:14.5px;max-width:600px;margin-left:auto;margin-right:auto;}
-
-.wrap{max-width:1000px;margin:0 auto;padding:10px 20px 70px;}
+.wrap{max-width:1000px;margin:0 auto;padding:24px 20px 70px;}
 
 .card{
   background:rgba(255,255,255,0.055);border:1px solid rgba(255,255,255,0.1);
@@ -66,23 +52,59 @@ a{color:inherit;}
 .card p{line-height:1.7;opacity:.85;margin-bottom:10px;font-size:15px;}
 .card p:last-child{margin-bottom:0;}
 
-.btn{
-  display:inline-block;background:linear-gradient(45deg,#FFD700,#e6a800);color:#0f3460;
-  font-weight:800;text-decoration:none;padding:13px 26px;border-radius:12px;
-  font-family:'Barlow Condensed',sans-serif;letter-spacing:.5px;font-size:15px;
-  text-transform:uppercase;border:none;cursor:pointer;
-}
-.btn.secondary{background:transparent;border:1.5px solid rgba(255,215,0,0.5);color:#FFD700;}
-
 footer{
   text-align:center;opacity:.55;font-size:12.5px;padding:28px 20px 40px;
   border-top:1px solid rgba(255,255,255,0.08);margin-top:10px;
 }
 footer a{color:#9fd8ff;text-decoration:none;}
 
-.empty,.loading{opacity:.5;text-align:center;padding:40px 0;font-size:13px;}
+.empty,.loading{opacity:.6;text-align:center;padding:40px 0;font-size:14px;}
 
+/* ───────── VOTING RESULTS PANEL ───────── */
+.vr-panel{
+  background:linear-gradient(180deg,#00264d,#00418a);
+  border-radius:6px;padding:26px 18px 22px;margin-bottom:26px;
+  box-shadow:0 10px 40px rgba(0,0,0,0.45);
+  font-family:Arial,Helvetica,sans-serif;
+}
+.vr-title{text-align:center;font-size:clamp(19px,3.4vw,25px);font-weight:700;color:#fff;margin-bottom:14px;}
+.vr-select-row{display:flex;justify-content:center;margin-bottom:14px;}
+.vr-select{
+  max-width:100%;padding:9px 14px;border-radius:8px;border:none;font-size:14px;font-weight:700;
+  background:#fff;color:#00264d;cursor:pointer;
+}
+.vr-leader{
+  display:block;width:fit-content;max-width:100%;margin:0 auto;text-align:center;
+  background:#FFD700;color:#111;font-weight:700;font-size:clamp(13px,2.4vw,16px);
+  padding:10px 18px;border-radius:10px;line-height:1.4;
+}
+.vr-leader.none{background:rgba(255,255,255,0.18);color:#fff;font-weight:600;}
+.vr-updated{text-align:center;font-size:12px;color:#cfe3ff;margin-top:12px;}
 
+.vr-timer{text-align:center;margin-top:16px;color:#fff;}
+.vr-timer .t-head{font-size:clamp(17px,3vw,21px);font-weight:700;}
+.vr-timer .t-count{font-size:clamp(20px,4vw,28px);font-weight:700;color:#FFD700;letter-spacing:1px;margin-top:4px;}
+.vr-timer .t-line{font-size:12.5px;color:#cfe3ff;margin-top:4px;line-height:1.5;}
+.vr-card{background:#fff;border-radius:10px;padding:12px;margin-top:20px;}
+.vr-scroll{overflow-x:auto;}
+table.vr-table{width:100%;border-collapse:collapse;font-size:14px;color:#222;min-width:560px;}
+.vr-table th{
+  background:#00418a;color:#fff;font-weight:700;font-size:14px;text-align:center;
+  padding:12px 8px;border:1px solid #00418a;
+}
+.vr-table td{padding:10px 8px;border:1px solid #dcdfe4;text-align:center;vertical-align:middle;}
+.vr-table td.c-name{text-align:left;padding-left:10px;}
+.vr-photo{width:52px;height:64px;object-fit:cover;border-radius:4px;display:block;margin:0 auto;background:#e9ecf1;}
+.vr-photo.ph{display:flex;align-items:center;justify-content:center;font-weight:700;font-size:22px;color:#00418a;}
+.vr-bar{position:relative;height:20px;background:#d9d9d9;border-radius:4px;overflow:hidden;min-width:100px;}
+.vr-bar > i{display:block;height:100%;background:#4caf50;}
+.vr-bar > b{
+  position:absolute;right:6px;top:0;line-height:20px;font-size:12px;color:#fff;
+  text-shadow:0 1px 1px rgba(0,0,0,.35);
+}
+.vr-bar.low > b{color:#222;text-shadow:none;}
+
+/* ───────── CHECK MY RESULT ───────── */
 .lookup-box{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;}
 .lookup-box input{
   flex:1;min-width:220px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.2);
@@ -107,62 +129,10 @@ footer a{color:#9fd8ff;text-decoration:none;}
 .lr-stat .lbl{font-size:11px;opacity:.6;text-transform:uppercase;letter-spacing:1px;}
 .lookup-err{color:#ff9090;margin-top:14px;font-size:14px;display:none;}
 
-#lineup{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-top:10px;}
-.chan{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:18px;cursor:pointer;transition:.15s;}
-.chan:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,215,0,0.4);transform:translateY(-2px);}
-.chan .ch-cat{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;text-transform:uppercase;}
-.chan .ch-count{margin-top:8px;font-size:11px;opacity:.55;text-transform:uppercase;letter-spacing:.5px;}
-.chan .ch-leader{margin-top:8px;font-size:13px;}
-.chan .ch-leader strong{color:#FFD700;}
-
-#standingsView{display:none;margin-top:10px;}
-.back{display:inline-flex;align-items:center;gap:6px;color:#9fd8ff;background:none;border:none;font-size:13px;cursor:pointer;padding:0;margin-bottom:18px;}
-.cat-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;text-transform:uppercase;font-size:clamp(20px,5vw,28px);margin-bottom:18px;}
-.rank-list{display:flex;flex-direction:column;gap:10px;}
-.rank-row{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:14px;}
-.rank-row.leader{border-color:rgba(255,215,0,0.5);background:rgba(255,215,0,0.06);}
-.rank-num{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;opacity:.4;width:26px;text-align:center;flex-shrink:0;}
-.rank-row.leader .rank-num{color:#FFD700;opacity:1;}
-.rank-row img{width:48px;height:48px;border-radius:8px;object-fit:cover;background:rgba(255,255,255,0.08);flex-shrink:0;}
-.rank-row .ph{width:48px;height:48px;border-radius:8px;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-weight:700;opacity:.5;flex-shrink:0;}
-.rank-info{flex:1;min-width:0;}
-.rank-name{font-weight:700;font-size:15px;}
-.rank-school{opacity:.55;font-size:12px;margin-top:2px;}
-.rank-votes{font-size:16px;color:#9fd8ff;white-space:nowrap;font-weight:600;}
-.rank-row.leader .rank-votes{color:#FFD700;}
-.updated{font-size:12px;color:#9fd8ff;margin-top:14px;text-align:center;}
-
-/* Standings table */
-.tbl-wrap{border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);}
-table.nom-table{width:100%;border-collapse:collapse;font-size:14px;}
-.nom-table th{text-align:left;padding:10px 14px;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.55);border-bottom:1px solid rgba(255,255,255,0.12);background:rgba(0,0,0,0.15);}
-.nom-table td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.06);vertical-align:middle;}
-.nom-table tr:last-child td{border-bottom:none;}
-.nom-table .c-rank{width:46px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:19px;opacity:.5;}
-.nom-table .c-photo{width:64px;}
-.nom-table .c-votes{text-align:right;white-space:nowrap;width:110px;}
-.nom-table th.c-votes{text-align:right;}
-.avatar{width:46px;height:46px;border-radius:50%;object-fit:cover;display:block;border:2px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.08);}
-.avatar.ph{display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;opacity:.7;}
-.n-name{font-weight:700;font-size:15px;}
-.n-sub{display:none;opacity:.55;font-size:12px;margin-top:2px;}
-.vote-num{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:22px;color:#9fd8ff;}
-.vote-lbl{display:block;font-size:10px;opacity:.5;text-transform:uppercase;letter-spacing:1px;margin-top:-2px;}
-tr.leader{background:rgba(255,215,0,0.09);}
-tr.leader td:first-child{box-shadow:inset 4px 0 0 #FFD700;}
-tr.leader .c-rank{color:#FFD700;opacity:1;}
-tr.leader .avatar{border-color:#FFD700;}
-tr.leader .vote-num{color:#FFD700;}
-.lead-tag{display:inline-block;margin-left:8px;font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#0f3460;background:linear-gradient(45deg,#FFD700,#e6a800);padding:2px 8px;border-radius:20px;vertical-align:middle;}
 @media (max-width:640px){
-  .nom-table th.c-school,.nom-table td.c-school{display:none;}
-  .n-sub{display:block;}
-  .nom-table th,.nom-table td{padding:9px 8px;}
-  .nom-table .c-photo{width:54px;}
-  .avatar{width:40px;height:40px;}
-  .lead-tag{display:block;margin:4px 0 0;width:max-content;}
+  .vr-panel{padding:20px 10px 16px;}
+  .vr-card{padding:8px;}
 }
-
 </style>
 </head>
 <body>
@@ -185,52 +155,57 @@ tr.leader .vote-num{color:#FFD700;}
   </div>
 </nav>
 
-<div class="page-hero">
-  <div class="badge">Live Results</div>
-  <h1>Vote<br><span>Results</span></h1>
-  <p class="sub">Check your own result privately, or browse the public standings by category.</p>
-</div>
 <div class="wrap">
 
-<div class="card">
-  <h2>Check My Result</h2>
-  <p>Enter the reference code you received when registering (e.g. <code>CTVA-2026-AR-400087</code>).</p>
-  <div class="lookup-box">
-    <input type="text" id="refInput" placeholder="CTVA-2026-XXX-000000">
-    <button id="lookupBtn">Check</button>
-  </div>
-  <div class="lookup-err" id="lookupErr"></div>
+  <!-- ═════════ VOTING RESULTS ═════════ -->
+  <div class="vr-panel">
+    <h1 class="vr-title">Cadet TV Personality Awards 2026 — Voting Results</h1>
+    <div class="vr-select-row">
+      <select class="vr-select" id="catSelect" aria-label="Choose a category"></select>
+    </div>
+    <div id="leaderBanner" class="vr-leader none">Loading results…</div>
+    <div class="vr-timer" id="voteTimer"></div>
+    <div class="vr-updated" id="lastUpdated"></div>
 
-  <div class="lookup-result" id="lookupResult">
-    <span class="lr-status" id="lrStatusPill"></span>
-    <div class="lr-row">
-      <img id="lrPhoto" src="" alt="">
-      <div>
-        <div style="font-weight:700;font-size:17px;" id="lrName"></div>
-        <div style="opacity:.6;font-size:13px;" id="lrMeta"></div>
+    <div class="vr-card">
+      <div class="vr-scroll">
+        <table class="vr-table">
+          <thead>
+            <tr><th style="width:48px">#</th><th style="width:84px">Photo</th><th>Name</th><th style="width:90px">Code</th><th style="width:96px">Votes</th><th style="width:150px">Progress</th></tr>
+          </thead>
+          <tbody id="resultsBody"><tr><td colspan="6" class="loading">Loading…</td></tr></tbody>
+        </table>
       </div>
     </div>
-    <div id="lrMessage" style="margin-top:14px;opacity:.8;font-size:14px;"></div>
-    <div class="lr-stats" id="lrStats" style="display:none;">
-      <div class="lr-stat"><div class="num" id="lrVotes">0</div><div class="lbl">Votes</div></div>
-      <div class="lr-stat"><div class="num" id="lrRank">—</div><div class="lbl">Rank in Category</div></div>
-      <div class="lr-stat"><div class="num" id="lrJudge">—</div><div class="lbl">Judge Score</div></div>
+  </div>
+
+  <!-- ═════════ CHECK MY RESULT ═════════ -->
+  <div class="card">
+    <h2>Check My Result</h2>
+    <p>Enter the reference code you received when registering (e.g. <code>CTVA-2026-AR-400087</code>).</p>
+    <div class="lookup-box">
+      <input type="text" id="refInput" placeholder="CTVA-2026-XXX-000000">
+      <button id="lookupBtn">Check</button>
+    </div>
+    <div class="lookup-err" id="lookupErr"></div>
+
+    <div class="lookup-result" id="lookupResult">
+      <span class="lr-status" id="lrStatusPill"></span>
+      <div class="lr-row">
+        <img id="lrPhoto" src="" alt="">
+        <div>
+          <div style="font-weight:700;font-size:17px;" id="lrName"></div>
+          <div style="opacity:.6;font-size:13px;" id="lrMeta"></div>
+        </div>
+      </div>
+      <div id="lrMessage" style="margin-top:14px;opacity:.8;font-size:14px;"></div>
+      <div class="lr-stats" id="lrStats" style="display:none;">
+        <div class="lr-stat"><div class="num" id="lrVotes">0</div><div class="lbl">Votes</div></div>
+        <div class="lr-stat"><div class="num" id="lrRank">—</div><div class="lbl">Rank in Category</div></div>
+        <div class="lr-stat"><div class="num" id="lrJudge">—</div><div class="lbl">Judge Score</div></div>
+      </div>
     </div>
   </div>
-</div>
-
-<div class="card">
-  <h2>Live Standings</h2>
-  <p>Tap a category to see full standings.</p>
-  <div class="updated" id="lastUpdated"></div>
-  <div id="lineup"><div class="loading">Loading standings…</div></div>
-
-  <div id="standingsView">
-    <button class="back" id="backBtn">‹ Back to categories</button>
-    <h2 class="cat-title" id="catTitle"></h2>
-    <div class="rank-list" id="rankList"></div>
-  </div>
-</div>
 
 </div>
 
@@ -250,7 +225,150 @@ tr.leader .vote-num{color:#FFD700;}
   'Best Weather Presenter','Best Weather Reporter','Best Weather Producer'
 ];
 
-  // ---- Check My Result ----
+  // ---------- helpers ----------
+  // Safe text, so a student's name can never inject HTML into the page.
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  // Drive saves a "view" link (a web page, not an image); turn it into a real image address.
+  function photoSrc(url){
+    if (!url || String(url).indexOf('ERROR') === 0) return '';
+    const m = String(url).match(/\/d\/([\w-]+)/) || String(url).match(/[?&]id=([\w-]+)/);
+    return m ? 'https://drive.google.com/thumbnail?id=' + m[1] + '&sz=w200' : String(url);
+  }
+  function photoHtml(n){
+    const letter = esc((n.name || '?').trim().charAt(0).toUpperCase());
+    const src = photoSrc(n.photoUrl);
+    if (!src) return `<div class="vr-photo ph">${letter}</div>`;
+    return `<img class="vr-photo" src="${esc(src)}" alt="${esc(n.name)}" loading="lazy" referrerpolicy="no-referrer"
+      onerror="this.outerHTML='<div class=&quot;vr-photo ph&quot;>${letter}</div>'">`;
+  }
+  // Highest votes first; ties fall back to name so the order is stable.
+  function byVotesDesc(a, b){ return (b.votes || 0) - (a.votes || 0) || String(a.name).localeCompare(String(b.name)); }
+
+  // ---------- Voting results table ----------
+  const catSelect = document.getElementById('catSelect');
+  const leaderBanner = document.getElementById('leaderBanner');
+  const resultsBody = document.getElementById('resultsBody');
+  const lastUpdatedEl = document.getElementById('lastUpdated');
+  let allNominees = [];
+
+  function renderTable(){
+    const cat = catSelect.value;
+    const list = allNominees.filter(n => n.category === cat).sort(byVotesDesc);
+
+    if (list.length === 0) {
+      leaderBanner.className = 'vr-leader none';
+      leaderBanner.textContent = 'No nominees in this category yet.';
+      resultsBody.innerHTML = '<tr><td colspan="6" class="empty">No nominees in this category yet.</td></tr>';
+      return;
+    }
+
+    const top = list[0];
+    const topVotes = top.votes || 0;
+
+    if (topVotes > 0) {
+      leaderBanner.className = 'vr-leader';
+      leaderBanner.innerHTML = '🏆 Leading: ' + esc(top.name) + ' ( ' + esc(top.school || '') + ' )' +
+        (top.naloCode ? ' (' + esc(top.naloCode) + ')' : '') +
+        ' with ' + topVotes.toLocaleString() + ' votes';
+    } else {
+      leaderBanner.className = 'vr-leader none';
+      leaderBanner.textContent = 'No votes recorded yet in this category.';
+    }
+
+    resultsBody.innerHTML = list.map((n, i) => {
+      const votes = n.votes || 0;
+      // Progress = this nominee's votes as a share of the leader's votes (leader = 100%).
+      const pct = topVotes > 0 ? (votes / topVotes) * 100 : 0;
+      const pctTxt = pct.toFixed(1) + '%';
+      return `<tr>
+        <td>${i + 1}</td>
+        <td>${photoHtml(n)}</td>
+        <td class="c-name">${esc(n.name)} ( ${esc(n.school || '')} )</td>
+        <td>${n.naloCode ? esc(n.naloCode) : '<span style="opacity:.5">Pending</span>'}</td>
+        <td>${votes.toLocaleString()}</td>
+        <td><div class="vr-bar ${pct < 30 ? 'low' : ''}"><i style="width:${pct.toFixed(1)}%"></i><b>${pctTxt}</b></div></td>
+      </tr>`;
+    }).join('');
+  }
+
+  function buildCategoryList(){
+    const prev = catSelect.value;
+    // Only list categories that actually have nominees.
+    const active = CATEGORIES.filter(c => allNominees.some(n => n.category === c));
+    const cats = active.length ? active : CATEGORIES;
+    catSelect.innerHTML = cats.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+    if (prev && cats.indexOf(prev) !== -1) catSelect.value = prev;
+  }
+
+  async function loadRecords(first){
+    if (API_URL.includes('PASTE_YOUR')) {
+      resultsBody.innerHTML = '<tr><td colspan="6" class="empty">Backend URL not configured yet.</td></tr>';
+      return;
+    }
+    try {
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'getRecords' })
+      });
+      const data = await res.json();
+      allNominees = (data.nominees || []).filter(n => n.status !== 'rejected');
+      if (data.lastUpdated) lastUpdatedEl.textContent = 'Last updated: ' + data.lastUpdated;
+      buildCategoryList();
+      renderTable();
+    } catch (err) {
+      if (first) {
+        leaderBanner.className = 'vr-leader none';
+        leaderBanner.textContent = 'Could not load results. Please refresh.';
+        resultsBody.innerHTML = '<tr><td colspan="6" class="empty">Could not load results. Please refresh.</td></tr>';
+      }
+    }
+  }
+
+  // ---------- Voting deadline ----------
+  // Voting ends 9 December 2026 at 23:59:59 Ghana time. Ghana (Africa/Accra) is on GMT all year,
+  // so this is the same instant as 23:59:59 UTC.
+  const VOTING_ENDS = new Date('2026-12-09T23:59:59Z');
+  const timerEl = document.getElementById('voteTimer');
+
+  function fmt(d, tz){
+    try {
+      return new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium', timeStyle: 'medium', timeZone: tz }).format(d);
+    } catch (e) { return d.toUTCString(); }
+  }
+
+  function tickTimer(){
+    const ms = VOTING_ENDS - new Date();
+    const userTz = (Intl.DateTimeFormat().resolvedOptions().timeZone) || 'UTC';
+    const endsGhana = fmt(VOTING_ENDS, 'Africa/Accra');
+    const endsLocal = fmt(VOTING_ENDS, userTz);
+    let html;
+    if (ms <= 0) {
+      html = '<div class="t-head">Voting has ended!</div>';
+    } else {
+      const s = Math.floor(ms / 1000);
+      const d = Math.floor(s / 86400), h = Math.floor((s % 86400) / 3600),
+            m = Math.floor((s % 3600) / 60), sec = s % 60;
+      html = '<div class="t-head">Voting is open!</div>' +
+             '<div class="t-count">' + d + 'd ' + String(h).padStart(2, '0') + 'h ' +
+             String(m).padStart(2, '0') + 'm ' + String(sec).padStart(2, '0') + 's left</div>';
+    }
+    html += '<div class="t-line">Ends at: ' + endsGhana + ' GMT (Africa/Accra)';
+    if (userTz !== 'Africa/Accra' && endsLocal !== endsGhana) {
+      html += '<br>Your local equivalent: ' + endsLocal + ' (' + esc(userTz) + ')';
+    }
+    html += '</div>';
+    timerEl.innerHTML = html;
+  }
+  tickTimer();
+  setInterval(tickTimer, 1000);
+
+  catSelect.addEventListener('change', renderTable);
+  loadRecords(true);
+  // Re-check for newly logged votes every 2 minutes while the tab is open and visible.
+  setInterval(() => { if (!document.hidden) loadRecords(false); }, 120000);
+
+  // ---------- Check My Result ----------
   const refInput = document.getElementById('refInput');
   const lookupBtn = document.getElementById('lookupBtn');
   const lookupErr = document.getElementById('lookupErr');
@@ -321,101 +439,6 @@ tr.leader .vote-num{color:#FFD700;}
 
   lookupBtn.addEventListener('click', doLookup);
   refInput.addEventListener('keydown', e => { if (e.key === 'Enter') doLookup(); });
-
-  // ---- Live standings ----
-  const lineupEl = document.getElementById('lineup');
-  const standingsView = document.getElementById('standingsView');
-  const rankList = document.getElementById('rankList');
-  const catTitle = document.getElementById('catTitle');
-  const backBtn = document.getElementById('backBtn');
-  const lastUpdatedEl = document.getElementById('lastUpdated');
-  let allNominees = [];
-
-  async function loadRecords(){
-    if (API_URL.includes('PASTE_YOUR')) {
-      lineupEl.innerHTML = '<div class="empty">Backend URL not configured yet.</div>';
-      return;
-    }
-    try {
-      const res = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: 'getRecords' })
-      });
-      const data = await res.json();
-      allNominees = data.nominees || [];
-      if (data.lastUpdated) lastUpdatedEl.textContent = 'Last updated: ' + data.lastUpdated;
-      renderLineup();
-    } catch (err) {
-      lineupEl.innerHTML = '<div class="empty">Could not load results. Please refresh.</div>';
-    }
-  }
-
-  function renderLineup(){
-    lineupEl.innerHTML = '';
-    CATEGORIES.forEach(cat => {
-      const nominees = allNominees.filter(n => n.category === cat).sort(byVotesDesc);
-      const leader = nominees[0] && (nominees[0].votes || 0) > 0 ? nominees[0] : null;
-      const div = document.createElement('div');
-      div.className = 'chan';
-      div.innerHTML = `
-        <div class="ch-cat">${cat}</div>
-        <div class="ch-count">${nominees.length} nominee${nominees.length === 1 ? '' : 's'}</div>
-        ${leader ? `<div class="ch-leader">Leading: <strong>${leader.name}</strong></div>` : ''}
-      `;
-      div.addEventListener('click', () => openCategory(cat));
-      lineupEl.appendChild(div);
-    });
-  }
-
-  function openCategory(cat){
-    lineupEl.style.display = 'none';
-    standingsView.style.display = 'block';
-    catTitle.textContent = cat;
-    const nominees = allNominees.filter(n => n.category === cat).sort(byVotesDesc);
-    rankList.innerHTML = '';
-    if (nominees.length === 0) {
-      rankList.innerHTML = '<div class="empty">No nominees in this category yet.</div>';
-      return;
-    }
-    const topVotes = nominees[0].votes || 0;
-    const rows = nominees.map((n, idx) => {
-      const isLeader = idx === 0 && topVotes > 0;
-      return `
-        <tr class="${isLeader ? 'leader' : ''}">
-          <td class="c-rank">${idx + 1}</td>
-          <td class="c-photo">${avatar(n)}</td>
-          <td><div class="n-name">${esc(n.name)}${isLeader ? '<span class="lead-tag">👑 Leading</span>' : ''}</div><div class="n-sub">${esc(n.school || '')}</div></td>
-          <td class="c-school">${esc(n.school || '')}</td>
-          <td class="c-votes"><span class="vote-num">${Number(n.votes || 0).toLocaleString()}</span><span class="vote-lbl">votes</span></td>
-        </tr>`;
-    }).join('');
-    rankList.innerHTML = `<div class="tbl-wrap"><table class="nom-table">
-      <thead><tr><th class="c-rank">#</th><th class="c-photo">Photo</th><th>Nominee</th><th class="c-school">School</th><th class="c-votes">Votes</th></tr></thead>
-      <tbody>${rows}</tbody></table></div>`;
-  }
-
-  // Helpers: safe text, Drive photo links turned into real image addresses, stable vote ordering.
-  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-  function photoSrc(url){
-    if (!url || String(url).indexOf('ERROR') === 0) return '';
-    const m = String(url).match(/\/d\/([\w-]+)/) || String(url).match(/[?&]id=([\w-]+)/);
-    return m ? 'https://drive.google.com/thumbnail?id=' + m[1] + '&sz=w200' : String(url);
-  }
-  function avatar(n){
-    const letter = esc((n.name || '?').trim().charAt(0).toUpperCase());
-    const src = photoSrc(n.photoUrl);
-    if (!src) return `<div class="avatar ph">${letter}</div>`;
-    return `<img class="avatar" src="${esc(src)}" alt="${esc(n.name)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=&quot;avatar ph&quot;>${letter}</div>'">`;
-  }
-  function byVotesDesc(a, b){ return (b.votes || 0) - (a.votes || 0) || String(a.name).localeCompare(String(b.name)); }
-
-  backBtn.addEventListener('click', () => {
-    standingsView.style.display = 'none';
-    lineupEl.style.display = 'grid';
-  });
-
-  loadRecords();
 </script>
 
 </body>
