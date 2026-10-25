@@ -132,6 +132,37 @@ footer a{color:#9fd8ff;text-decoration:none;}
 .rank-row.leader .rank-votes{color:#FFD700;}
 .updated{font-size:12px;color:#9fd8ff;margin-top:14px;text-align:center;}
 
+/* Standings table */
+.tbl-wrap{border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);}
+table.nom-table{width:100%;border-collapse:collapse;font-size:14px;}
+.nom-table th{text-align:left;padding:10px 14px;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.55);border-bottom:1px solid rgba(255,255,255,0.12);background:rgba(0,0,0,0.15);}
+.nom-table td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.06);vertical-align:middle;}
+.nom-table tr:last-child td{border-bottom:none;}
+.nom-table .c-rank{width:46px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:19px;opacity:.5;}
+.nom-table .c-photo{width:64px;}
+.nom-table .c-votes{text-align:right;white-space:nowrap;width:110px;}
+.nom-table th.c-votes{text-align:right;}
+.avatar{width:46px;height:46px;border-radius:50%;object-fit:cover;display:block;border:2px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.08);}
+.avatar.ph{display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;opacity:.7;}
+.n-name{font-weight:700;font-size:15px;}
+.n-sub{display:none;opacity:.55;font-size:12px;margin-top:2px;}
+.vote-num{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:22px;color:#9fd8ff;}
+.vote-lbl{display:block;font-size:10px;opacity:.5;text-transform:uppercase;letter-spacing:1px;margin-top:-2px;}
+tr.leader{background:rgba(255,215,0,0.09);}
+tr.leader td:first-child{box-shadow:inset 4px 0 0 #FFD700;}
+tr.leader .c-rank{color:#FFD700;opacity:1;}
+tr.leader .avatar{border-color:#FFD700;}
+tr.leader .vote-num{color:#FFD700;}
+.lead-tag{display:inline-block;margin-left:8px;font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#0f3460;background:linear-gradient(45deg,#FFD700,#e6a800);padding:2px 8px;border-radius:20px;vertical-align:middle;}
+@media (max-width:640px){
+  .nom-table th.c-school,.nom-table td.c-school{display:none;}
+  .n-sub{display:block;}
+  .nom-table th,.nom-table td{padding:9px 8px;}
+  .nom-table .c-photo{width:54px;}
+  .avatar{width:40px;height:40px;}
+  .lead-tag{display:block;margin:4px 0 0;width:max-content;}
+}
+
 </style>
 </head>
 <body>
@@ -268,7 +299,8 @@ footer a{color:#9fd8ff;text-decoration:none;}
     document.getElementById('lrName').textContent = data.name;
     document.getElementById('lrMeta').textContent = data.category + (data.school ? ' · ' + data.school : '');
     const photo = document.getElementById('lrPhoto');
-    if (data.photoUrl) { photo.src = data.photoUrl; photo.style.display = 'block'; } else { photo.style.display = 'none'; }
+    const lrSrc = photoSrc(data.photoUrl);
+    if (lrSrc) { photo.src = lrSrc; photo.style.display = 'block'; } else { photo.style.display = 'none'; }
 
     const msg = document.getElementById('lrMessage');
     const stats = document.getElementById('lrStats');
@@ -322,8 +354,8 @@ footer a{color:#9fd8ff;text-decoration:none;}
   function renderLineup(){
     lineupEl.innerHTML = '';
     CATEGORIES.forEach(cat => {
-      const nominees = allNominees.filter(n => n.category === cat).sort((a,b) => b.votes - a.votes);
-      const leader = nominees[0];
+      const nominees = allNominees.filter(n => n.category === cat).sort(byVotesDesc);
+      const leader = nominees[0] && (nominees[0].votes || 0) > 0 ? nominees[0] : null;
       const div = document.createElement('div');
       div.className = 'chan';
       div.innerHTML = `
@@ -340,28 +372,43 @@ footer a{color:#9fd8ff;text-decoration:none;}
     lineupEl.style.display = 'none';
     standingsView.style.display = 'block';
     catTitle.textContent = cat;
-    const nominees = allNominees.filter(n => n.category === cat).sort((a,b) => b.votes - a.votes);
+    const nominees = allNominees.filter(n => n.category === cat).sort(byVotesDesc);
     rankList.innerHTML = '';
     if (nominees.length === 0) {
       rankList.innerHTML = '<div class="empty">No nominees in this category yet.</div>';
       return;
     }
-    nominees.forEach((n, idx) => {
-      const row = document.createElement('div');
-      row.className = 'rank-row' + (idx === 0 ? ' leader' : '');
-      const photoHtml = n.photoUrl ? `<img src="${n.photoUrl}" alt="${n.name}">` : `<div class="ph">${(n.name||'?').charAt(0).toUpperCase()}</div>`;
-      row.innerHTML = `
-        <div class="rank-num">${idx + 1}</div>
-        ${photoHtml}
-        <div class="rank-info">
-          <div class="rank-name">${n.name}</div>
-          <div class="rank-school">${n.school || ''}</div>
-        </div>
-        <div class="rank-votes">${n.votes.toLocaleString()} votes</div>
-      `;
-      rankList.appendChild(row);
-    });
+    const topVotes = nominees[0].votes || 0;
+    const rows = nominees.map((n, idx) => {
+      const isLeader = idx === 0 && topVotes > 0;
+      return `
+        <tr class="${isLeader ? 'leader' : ''}">
+          <td class="c-rank">${idx + 1}</td>
+          <td class="c-photo">${avatar(n)}</td>
+          <td><div class="n-name">${esc(n.name)}${isLeader ? '<span class="lead-tag">👑 Leading</span>' : ''}</div><div class="n-sub">${esc(n.school || '')}</div></td>
+          <td class="c-school">${esc(n.school || '')}</td>
+          <td class="c-votes"><span class="vote-num">${Number(n.votes || 0).toLocaleString()}</span><span class="vote-lbl">votes</span></td>
+        </tr>`;
+    }).join('');
+    rankList.innerHTML = `<div class="tbl-wrap"><table class="nom-table">
+      <thead><tr><th class="c-rank">#</th><th class="c-photo">Photo</th><th>Nominee</th><th class="c-school">School</th><th class="c-votes">Votes</th></tr></thead>
+      <tbody>${rows}</tbody></table></div>`;
   }
+
+  // Helpers: safe text, Drive photo links turned into real image addresses, stable vote ordering.
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function photoSrc(url){
+    if (!url || String(url).indexOf('ERROR') === 0) return '';
+    const m = String(url).match(/\/d\/([\w-]+)/) || String(url).match(/[?&]id=([\w-]+)/);
+    return m ? 'https://drive.google.com/thumbnail?id=' + m[1] + '&sz=w200' : String(url);
+  }
+  function avatar(n){
+    const letter = esc((n.name || '?').trim().charAt(0).toUpperCase());
+    const src = photoSrc(n.photoUrl);
+    if (!src) return `<div class="avatar ph">${letter}</div>`;
+    return `<img class="avatar" src="${esc(src)}" alt="${esc(n.name)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=&quot;avatar ph&quot;>${letter}</div>'">`;
+  }
+  function byVotesDesc(a, b){ return (b.votes || 0) - (a.votes || 0) || String(a.name).localeCompare(String(b.name)); }
 
   backBtn.addEventListener('click', () => {
     standingsView.style.display = 'none';

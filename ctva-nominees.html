@@ -57,23 +57,6 @@ a{color:inherit;}
 
 .wrap{max-width:1000px;margin:0 auto;padding:10px 20px 70px;}
 
-.card{
-  background:rgba(255,255,255,0.055);border:1px solid rgba(255,255,255,0.1);
-  border-radius:16px;padding:26px;margin-bottom:18px;
-}
-.card h2,.card h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;color:#FFD700;letter-spacing:.3px;}
-.card h2{font-size:22px;margin-bottom:10px;text-transform:uppercase;}
-.card p{line-height:1.7;opacity:.85;margin-bottom:10px;font-size:15px;}
-.card p:last-child{margin-bottom:0;}
-
-.btn{
-  display:inline-block;background:linear-gradient(45deg,#FFD700,#e6a800);color:#0f3460;
-  font-weight:800;text-decoration:none;padding:13px 26px;border-radius:12px;
-  font-family:'Barlow Condensed',sans-serif;letter-spacing:.5px;font-size:15px;
-  text-transform:uppercase;border:none;cursor:pointer;
-}
-.btn.secondary{background:transparent;border:1.5px solid rgba(255,215,0,0.5);color:#FFD700;}
-
 footer{
   text-align:center;opacity:.55;font-size:12.5px;padding:28px 20px 40px;
   border-top:1px solid rgba(255,255,255,0.08);margin-top:10px;
@@ -82,18 +65,74 @@ footer a{color:#9fd8ff;text-decoration:none;}
 
 .empty,.loading{opacity:.5;text-align:center;padding:40px 0;font-size:13px;}
 
+/* TOOLBAR */
+.toolbar{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:14px 0 22px;}
+.toolbar input{
+  flex:1;min-width:220px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.2);
+  color:#fff;padding:12px 16px;border-radius:10px;font-size:14px;font-family:inherit;
+}
+.toolbar input:focus{outline:none;border-color:#FFD700;}
+.updated{font-size:12px;color:#9fd8ff;}
 
-.cat-section{margin-bottom:30px;}
-.cat-section h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;color:#FFD700;text-transform:uppercase;font-size:17px;margin-bottom:12px;letter-spacing:.3px;}
-.nominee-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;}
-.nominee-card{background:rgba(255,255,255,0.055);border:1px solid rgba(255,255,255,0.1);border-radius:14px;overflow:hidden;text-align:center;}
-.nominee-card img{width:100%;aspect-ratio:1;object-fit:cover;background:rgba(255,255,255,0.08);}
-.nominee-card .ph{width:100%;aspect-ratio:1;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:34px;opacity:.4;}
-.nominee-card .nc-body{padding:10px 8px;}
-.nominee-card .nc-name{font-weight:700;font-size:13.5px;}
-.nominee-card .nc-school{opacity:.55;font-size:11px;margin-top:2px;}
-.nominee-card .nc-code{margin-top:6px;font-size:11px;color:#FFD700;font-weight:700;letter-spacing:.3px;}
+/* CATEGORY TABLES */
+.cat-section{
+  margin-bottom:26px;border-radius:16px;overflow:hidden;
+  background:rgba(255,255,255,0.045);border:1px solid rgba(255,255,255,0.1);
+}
+.cat-head{
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+  padding:14px 18px;background:rgba(255,215,0,0.09);border-bottom:1px solid rgba(255,215,0,0.25);
+}
+.cat-head h3{font-family:'Barlow Condensed',sans-serif;font-weight:800;color:#FFD700;text-transform:uppercase;font-size:18px;letter-spacing:.4px;}
+.cat-head .cnt{font-size:11px;opacity:.6;text-transform:uppercase;letter-spacing:1px;white-space:nowrap;}
 
+table.nom-table{width:100%;border-collapse:collapse;font-size:14px;}
+.nom-table th{
+  text-align:left;padding:10px 14px;font-family:'Barlow Condensed',sans-serif;font-size:12px;
+  letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.55);
+  border-bottom:1px solid rgba(255,255,255,0.12);background:rgba(0,0,0,0.15);
+}
+.nom-table td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.06);vertical-align:middle;}
+.nom-table tr:last-child td{border-bottom:none;}
+.nom-table tbody tr:hover{background:rgba(255,255,255,0.04);}
+.nom-table .c-rank{width:46px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:19px;opacity:.5;}
+.nom-table .c-photo{width:64px;}
+.nom-table .c-votes{text-align:right;white-space:nowrap;width:110px;}
+.nom-table th.c-votes{text-align:right;}
+
+.avatar{
+  width:46px;height:46px;border-radius:50%;object-fit:cover;display:block;
+  border:2px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.08);
+}
+.avatar.ph{display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;opacity:.7;}
+.n-name{font-weight:700;font-size:15px;}
+.n-sub{display:none;opacity:.55;font-size:12px;margin-top:2px;}
+.vote-num{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:22px;color:#9fd8ff;}
+.vote-lbl{display:block;font-size:10px;opacity:.5;text-transform:uppercase;letter-spacing:1px;margin-top:-2px;}
+.code{display:inline-block;font-weight:700;color:#FFD700;letter-spacing:.3px;}
+.code.pending{color:rgba(255,255,255,0.4);font-weight:500;}
+
+/* LEADER ROW */
+tr.leader{background:rgba(255,215,0,0.09);}
+tr.leader:hover{background:rgba(255,215,0,0.13) !important;}
+tr.leader td:first-child{box-shadow:inset 4px 0 0 #FFD700;}
+tr.leader .c-rank{color:#FFD700;opacity:1;}
+tr.leader .avatar{border-color:#FFD700;}
+tr.leader .vote-num{color:#FFD700;}
+.lead-tag{
+  display:inline-block;margin-left:8px;font-size:10px;font-weight:800;letter-spacing:1px;
+  text-transform:uppercase;color:#0f3460;background:linear-gradient(45deg,#FFD700,#e6a800);
+  padding:2px 8px;border-radius:20px;vertical-align:middle;
+}
+
+@media (max-width:640px){
+  .nom-table th.c-school,.nom-table td.c-school{display:none;}
+  .n-sub{display:block;}
+  .nom-table th,.nom-table td{padding:9px 8px;}
+  .nom-table .c-photo{width:54px;}
+  .avatar{width:40px;height:40px;}
+  .lead-tag{display:block;margin:4px 0 0;width:max-content;}
+}
 </style>
 </head>
 <body>
@@ -119,10 +158,14 @@ footer a{color:#9fd8ff;text-decoration:none;}
 <div class="page-hero">
   <div class="badge">Meet The Field</div>
   <h1>Our<br><span>Nominees</span></h1>
-  <p class="sub">Registered nominees by category, with their official voting code.</p>
+  <p class="sub">Every registered nominee by category, ranked by votes. The leader is always at the top.</p>
 </div>
 <div class="wrap">
-<div id="nomineesContainer"><div class="loading">Loading nominees…</div></div>
+  <div class="toolbar">
+    <input type="text" id="searchBox" placeholder="Search by name, school or category…" aria-label="Search nominees">
+    <span class="updated" id="lastUpdated"></span>
+  </div>
+  <div id="nomineesContainer"><div class="loading">Loading nominees…</div></div>
 </div>
 
 <footer>
@@ -141,8 +184,92 @@ footer a{color:#9fd8ff;text-decoration:none;}
   'Best Weather Presenter','Best Weather Reporter','Best Weather Producer'
 ];
   const container = document.getElementById('nomineesContainer');
+  const searchBox = document.getElementById('searchBox');
+  const lastUpdatedEl = document.getElementById('lastUpdated');
+  let allNominees = [];
 
-  async function load(){
+  // Escape text so a student's name/school can never inject HTML into the page.
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c =>
+    ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  // The backend stores a Google Drive "view" link (drive.google.com/file/d/ID/view),
+  // which is a web page, not an image, so <img> cannot show it. Pull out the
+  // file ID and use Drive's thumbnail address instead.
+  function photoSrc(url){
+    if (!url || String(url).indexOf('ERROR') === 0) return '';
+    const m = String(url).match(/\/d\/([\w-]+)/) || String(url).match(/[?&]id=([\w-]+)/);
+    return m ? 'https://drive.google.com/thumbnail?id=' + m[1] + '&sz=w200' : String(url);
+  }
+
+  function avatar(n){
+    const letter = esc((n.name || '?').trim().charAt(0).toUpperCase());
+    const src = photoSrc(n.photoUrl);
+    if (!src) return `<div class="avatar ph">${letter}</div>`;
+    return `<img class="avatar" src="${esc(src)}" alt="${esc(n.name)}" loading="lazy" referrerpolicy="no-referrer"
+      onerror="this.outerHTML='<div class=&quot;avatar ph&quot;>${letter}</div>'">`;
+  }
+
+  // Highest votes first; ties fall back to alphabetical so the order is stable.
+  function byVotesDesc(a, b){
+    return (b.votes || 0) - (a.votes || 0) || String(a.name).localeCompare(String(b.name));
+  }
+
+  function render(){
+    const q = searchBox.value.trim().toLowerCase();
+    container.innerHTML = '';
+    let any = false;
+
+    CATEGORIES.forEach(cat => {
+      // Rank is decided from the FULL category list, then the search only filters what is shown.
+      const ranked = allNominees.filter(n => n.category === cat).sort(byVotesDesc);
+      if (ranked.length === 0) return;
+      const topVotes = ranked[0].votes || 0;
+
+      const shown = ranked
+        .map((n, i) => ({ n, rank: i + 1 }))
+        .filter(x => !q || (x.n.name + ' ' + x.n.school + ' ' + cat).toLowerCase().includes(q));
+      if (shown.length === 0) return;
+      any = true;
+
+      const rows = shown.map(({ n, rank }) => {
+        const isLeader = rank === 1 && topVotes > 0;
+        const hasCode = !!n.naloCode;
+        return `
+          <tr class="${isLeader ? 'leader' : ''}">
+            <td class="c-rank">${rank}</td>
+            <td class="c-photo">${avatar(n)}</td>
+            <td>
+              <div class="n-name">${esc(n.name)}${isLeader ? '<span class="lead-tag">👑 Leading</span>' : ''}</div>
+              <div class="n-sub">${esc(n.school || '')}</div>
+            </td>
+            <td class="c-school">${esc(n.school || '')}</td>
+            <td><span class="code ${hasCode ? '' : 'pending'}">${hasCode ? esc(n.naloCode) : 'Pending'}</span></td>
+            <td class="c-votes"><span class="vote-num">${Number(n.votes || 0).toLocaleString()}</span><span class="vote-lbl">votes</span></td>
+          </tr>`;
+      }).join('');
+
+      const section = document.createElement('div');
+      section.className = 'cat-section';
+      section.innerHTML = `
+        <div class="cat-head"><h3>${esc(cat)}</h3><span class="cnt">${ranked.length} nominee${ranked.length === 1 ? '' : 's'}</span></div>
+        <table class="nom-table">
+          <thead><tr>
+            <th class="c-rank">#</th><th class="c-photo">Photo</th><th>Nominee</th>
+            <th class="c-school">School</th><th>Voting Code</th><th class="c-votes">Votes</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>`;
+      container.appendChild(section);
+    });
+
+    if (!any) {
+      container.innerHTML = allNominees.length
+        ? '<div class="empty">No nominees match your search.</div>'
+        : '<div class="empty">No nominees registered yet. Check back soon!</div>';
+    }
+  }
+
+  async function load(first){
     if (API_URL.includes('PASTE_YOUR')) {
       container.innerHTML = '<div class="empty">Backend URL not configured yet.</div>';
       return;
@@ -154,37 +281,18 @@ footer a{color:#9fd8ff;text-decoration:none;}
         body: JSON.stringify({ action: 'getRecords' })
       });
       const data = await res.json();
-      const all = data.nominees || [];
-      container.innerHTML = '';
-      let any = false;
-      CATEGORIES.forEach(cat => {
-        const list = all.filter(n => n.category === cat && n.status !== 'rejected');
-        if (list.length === 0) return;
-        any = true;
-        const section = document.createElement('div');
-        section.className = 'cat-section';
-        const cards = list.map(n => {
-          const photo = n.photoUrl ? `<img src="${n.photoUrl}" alt="${n.name}">` : `<div class="ph">${(n.name||'?').charAt(0).toUpperCase()}</div>`;
-          return `
-            <div class="nominee-card">
-              ${photo}
-              <div class="nc-body">
-                <div class="nc-name">${n.name}</div>
-                <div class="nc-school">${n.school || ''}</div>
-                <div class="nc-code"${n.naloCode ? '' : ' style="opacity:.6"'}>Voting Code: ${n.naloCode ? n.naloCode : 'Pending'}</div>
-              </div>
-            </div>
-          `;
-        }).join('');
-        section.innerHTML = `<h3>${cat}</h3><div class="nominee-grid">${cards}</div>`;
-        container.appendChild(section);
-      });
-      if (!any) container.innerHTML = '<div class="empty">No nominees registered yet. Check back soon!</div>';
+      allNominees = (data.nominees || []).filter(n => n.status !== 'rejected');
+      if (data.lastUpdated) lastUpdatedEl.textContent = 'Votes last updated: ' + data.lastUpdated;
+      render();
     } catch (err) {
-      container.innerHTML = '<div class="empty">Could not load nominees. Please refresh.</div>';
+      if (first) container.innerHTML = '<div class="empty">Could not load nominees. Please refresh.</div>';
     }
   }
-  load();
+
+  searchBox.addEventListener('input', render);
+  load(true);
+  // Keep the order fresh when the admin logs new votes (every 2 minutes, only while the tab is visible).
+  setInterval(() => { if (!document.hidden) load(false); }, 120000);
 </script>
 
 </body>
