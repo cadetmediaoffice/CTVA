@@ -84,7 +84,7 @@ footer a{color:#9fd8ff;text-decoration:none;}
 
 
 
-.slideshow{position:relative;max-width:1000px;margin:10px auto 22px;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.1);background:rgba(0,0,0,.25);aspect-ratio:16/9;}
+.slideshow{position:relative;max-width:1000px;margin:10px auto 22px;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.1);background:#0b1226;aspect-ratio:16/9;}
 .slideshow img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .8s;}
 .slideshow img.on{opacity:1;}
 .ss-cap{position:absolute;left:0;right:0;bottom:0;padding:26px 18px 14px;background:linear-gradient(transparent,rgba(0,0,0,.7));font-size:14px;font-weight:600;}
@@ -94,6 +94,14 @@ footer a{color:#9fd8ff;text-decoration:none;}
 .ss-dots{position:absolute;bottom:10px;right:14px;display:flex;gap:6px;}
 .ss-dots i{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.4);cursor:pointer;}
 .ss-dots i.on{background:#FFD700;}
+.naad-img{display:block;width:100%;height:auto;border-radius:12px;margin:14px 0;background:#fff;}
+.naad-card h3{font-size:18px;margin:14px 0 6px;text-transform:uppercase;}
+.naad-list{margin:6px 0 4px 20px;line-height:1.8;opacity:.9;font-size:15px;}
+.naad-steps{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;}
+.naad-steps span{flex:1 1 120px;text-align:center;background:rgba(255,215,0,.12);border:1px solid rgba(255,215,0,.35);border-radius:10px;padding:10px 6px;font:700 13px 'Barlow Condensed',sans-serif;letter-spacing:1px;color:#FFD700;text-transform:uppercase;}
+.naad-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin:10px 0;}
+.naad-grid div{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.55;}
+.naad-grid b{display:block;color:#FFD700;font-family:'Barlow Condensed',sans-serif;font-size:15px;letter-spacing:.3px;margin-bottom:3px;text-transform:uppercase;}
 </style>
 </head>
 <body>
@@ -142,6 +150,13 @@ footer a{color:#9fd8ff;text-decoration:none;}
   <p><a href="ctva-about.html" style="color:#FFD700;font-weight:600;text-decoration:none;">Read more about us →</a></p>
 </div>
 
+<div class="card naad-card">
+  <h2>Education Through Media</h2>
+  <p>The Cadet TV Personality Awards is run under the <strong>National Academic Assessment Drive (NAAD)</strong> initiative, where we nurture children through media and put safety first. Every nominee automatically receives the drive, learns about safety from national safety and security agencies, and can take the assessment quiz on it. Cadets who succeed are awarded as well.</p>
+  <img class="naad-img" src="naad-splash.jpg" alt="NAAD Safety Edition" loading="lazy">
+  <p><a href="ctva-about.html" style="color:#FFD700;font-weight:600;text-decoration:none;">Learn more about NAAD →</a></p>
+</div>
+
 <div class="card">
   <h2>Get Around</h2>
   <p>
@@ -167,7 +182,7 @@ footer a{color:#9fd8ff;text-decoration:none;}
   try{const r=await fetch('slides.json',{cache:'no-cache'});slides=await r.json();}catch(e){}
   if(!slides.length)return;
   box.hidden=false;
-  box.innerHTML=slides.map((s,i)=>`<img src="${s.src}" alt="${s.caption||'CTVA photo'}" class="${i?'':'on'}" loading="${i?'lazy':'eager'}">`).join('')
+  box.innerHTML=slides.map((s,i)=>`<img src="${s.src}" alt="${s.caption||'CTVA photo'}" style="object-fit:${s.fit||'cover'};object-position:center 25%" class="${i?'':'on'}" loading="${i?'lazy':'eager'}">`).join('')
    +'<div class="ss-cap"></div><button class="ss-btn ss-prev" aria-label="Previous">&#8249;</button><button class="ss-btn ss-next" aria-label="Next">&#8250;</button><div class="ss-dots">'+slides.map((_,i)=>`<i data-i="${i}"></i>`).join('')+'</div>';
   const imgs=box.querySelectorAll('img'),dots=box.querySelectorAll('.ss-dots i'),cap=box.querySelector('.ss-cap');
   let cur=0,t;
