@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Archive | Cadet TV Personality Awards 2026</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Barlow',Arial,sans-serif;
+  background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);
+  min-height:100vh;color:#fff;
+}
+a{color:inherit;}
+
+/* NAV */
+.site-nav{
+  position:sticky;top:0;z-index:50;
+  background:rgba(15,20,40,0.85);backdrop-filter:blur(10px);
+  border-bottom:1px solid rgba(255,215,0,0.15);
+}
+.nav-inner{
+  max-width:1100px;margin:0 auto;padding:14px 20px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+}
+.brand{
+  font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:19px;
+  text-decoration:none;color:#FFD700;letter-spacing:.3px;white-space:nowrap;
+}
+.brand span{color:#fff;}
+.nav-links{display:flex;gap:4px;flex-wrap:wrap;}
+.nav-links a{
+  text-decoration:none;font-size:13.5px;font-weight:600;color:rgba(255,255,255,0.7);
+  padding:8px 12px;border-radius:8px;transition:.15s;white-space:nowrap;
+}
+.nav-links a:hover{color:#fff;background:rgba(255,255,255,0.06);}
+.nav-links a.active{color:#0f3460;background:#FFD700;font-weight:700;}
+.nav-links a.nav-register{background:linear-gradient(45deg,#FFD700,#e6a800);color:#0f3460;font-weight:800;}
+.nav-links a.nav-register:hover{opacity:.9;background:linear-gradient(45deg,#FFD700,#e6a800);}
+
+/* PAGE HEADER */
+.page-hero{max-width:1000px;margin:0 auto;padding:40px 20px 10px;text-align:center;}
+.badge{
+  display:inline-flex;align-items:center;gap:8px;font-size:11.5px;letter-spacing:2px;
+  color:#FFD700;border:1px solid rgba(255,215,0,0.4);border-radius:20px;padding:5px 14px;
+  margin-bottom:16px;text-transform:uppercase;font-weight:700;
+}
+.page-hero h1{
+  font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:.5px;
+  font-size:clamp(26px,6vw,44px);line-height:1.1;text-transform:uppercase;
+}
+.page-hero h1 span{color:#FFD700;}
+.page-hero .sub{opacity:.68;margin-top:12px;font-size:14.5px;max-width:600px;margin-left:auto;margin-right:auto;}
+
+.wrap{max-width:1000px;margin:0 auto;padding:10px 20px 70px;}
+
+.card{
+  background:rgba(255,255,255,0.055);border:1px solid rgba(255,255,255,0.1);
+  border-radius:16px;padding:26px;margin-bottom:18px;
+}
+.card h2,.card h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;color:#FFD700;letter-spacing:.3px;}
+.card h2{font-size:22px;margin-bottom:10px;text-transform:uppercase;}
+.card p{line-height:1.7;opacity:.85;margin-bottom:10px;font-size:15px;}
+.card p:last-child{margin-bottom:0;}
+
+.btn{
+  display:inline-block;background:linear-gradient(45deg,#FFD700,#e6a800);color:#0f3460;
+  font-weight:800;text-decoration:none;padding:13px 26px;border-radius:12px;
+  font-family:'Barlow Condensed',sans-serif;letter-spacing:.5px;font-size:15px;
+  text-transform:uppercase;border:none;cursor:pointer;
+}
+.btn.secondary{background:transparent;border:1.5px solid rgba(255,215,0,0.5);color:#FFD700;}
+
+footer{
+  text-align:center;opacity:.55;font-size:12.5px;padding:28px 20px 40px;
+  border-top:1px solid rgba(255,255,255,0.08);margin-top:10px;
+}
+footer a{color:#9fd8ff;text-decoration:none;}
+
+.empty,.loading{opacity:.5;text-align:center;padding:40px 0;font-size:13px;}
+
+
+.cat-section{margin-bottom:26px;}
+.cat-section h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;color:#FFD700;text-transform:uppercase;font-size:16px;margin-bottom:12px;}
+.judge-row{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:14px;margin-bottom:8px;}
+.judge-row img{width:42px;height:42px;border-radius:8px;object-fit:cover;background:rgba(255,255,255,0.08);}
+.judge-row .ph{width:42px;height:42px;border-radius:8px;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-weight:700;opacity:.5;}
+.judge-row .jr-info{flex:1;}
+.judge-row .jr-name{font-weight:700;font-size:14.5px;}
+.judge-row .jr-school{opacity:.55;font-size:11.5px;}
+.judge-row .jr-score{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;color:#FFD700;white-space:nowrap;}
+.judge-row .jr-score.pending{color:rgba(255,255,255,0.3);font-size:12px;font-weight:600;font-family:'Barlow',sans-serif;}
+
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center;margin-bottom:22px;}
+.toolbar select,.toolbar button{font:600 14px Barlow,Arial,sans-serif;padding:10px 14px;border-radius:10px;border:1px solid rgba(255,215,0,.4);background:#16213e;color:#fff;cursor:pointer;}
+.toolbar button.on{background:#FFD700;color:#0f3460;}
+.ar-row{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:14px;margin-bottom:8px;}
+.ar-row img,.ar-row .ph{width:42px;height:42px;border-radius:8px;object-fit:cover;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-weight:700;opacity:.8;}
+.ar-info{flex:1}.ar-name{font-weight:700;font-size:14.5px}.ar-school{opacity:.55;font-size:11.5px}
+.ar-num{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;color:#FFD700;white-space:nowrap;text-align:right;min-width:70px}
+.ar-num small{display:block;font:500 10px Barlow,Arial,sans-serif;opacity:.5;text-transform:uppercase;letter-spacing:1px}
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a class="brand" href="index.html">CTVA <span>2026</span></a>
+    <div class="nav-links">
+      <a class="" href="index.html">Home</a>
+<a class="" href="ctva-about.html">About Us</a>
+<a class="" href="ctva-vote-results.html">Vote Results</a>
+<a class="" href="ctva-nominees.html">Nominees</a>
+<a class="" href="ctva-judges-ratings.html">Judges' Ratings</a>
+<a class=" active" href="ctva-archive.html">Archive</a>
+<a class="" href="ctva-vote-online.html">Vote Online</a>
+<a class="" href="ctva-contact.html">Contact Us</a>
+<a class="nav-register" href="https://cadetmediaoffice.github.io/TV-Personality-Awards/tv_awards_register.html" target="_blank" rel="noopener">Register</a>
+
+    </div>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="badge">Past Editions</div>
+  <h1>Awards<br><span>Archive</span></h1>
+  <p class="sub">Nominee vote counts and judges' scores from every year of the awards.</p>
+</div>
+<div class="wrap">
+  <div class="toolbar">
+    <select id="yearSel" aria-label="Year"></select>
+    <button id="vBtn" class="on">Vote Results</button>
+    <button id="jBtn">Judges' Scores</button>
+    <button id="cBtn">Combined (40/60)</button>
+    <button id="dlBtn" hidden>Download current data as archive file</button>
+  </div>
+  <div id="archiveContainer"><div class="loading">Loading archive…</div></div>
+</div>
+<footer>
+  Cadet TV Personality Awards · Cadet Media Ghana ·
+  <a href="mailto:cadetmediaoffice@gmail.com">cadetmediaoffice@gmail.com</a>
+</footer>
+<script>
+const API_URL='https://script.google.com/macros/s/AKfycbxfTkqqjtjXLXekfT-fODrdU-F3SzroDSCogLnOcICh1ImtKeLKFJK7Xb6f2K4jsQ0/exec';
+const box=document.getElementById('archiveContainer'),sel=document.getElementById('yearSel');
+const cBtn=document.getElementById('cBtn');const vBtn=document.getElementById('vBtn'),jBtn=document.getElementById('jBtn'),dlBtn=document.getElementById('dlBtn');
+let data=null,mode='votes';
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function render(){
+  if(!data||!data.nominees||!data.nominees.length){box.innerHTML='<div class="empty">No data archived for this year yet.</div>';return;}
+  const hasVotes=data.nominees.some(n=>n.votes!==null&&n.votes!==undefined);
+  const key=mode==='votes'?'votes':mode==='combined'?'combinedScore':'judgeScore';
+  let html='';
+  if(mode==='judges'&&data.schools&&data.schools.length){
+    if(data.podium&&data.podium.length){html+='<div class="cat-section"><h3>Top Individuals</h3>'+data.podium.map(p=>`<div class="ar-row"><div class="ar-info"><div class="ar-name">${esc(p.place)}: ${esc(p.name)}</div><div class="ar-school">${esc(p.school)} &middot; ${esc(p.category)} &middot; ${esc(p.code)}</div></div></div>`).join('')+'</div>';}
+    html+='<div class="cat-section"><h3>School standings (adjudicators)</h3>'+data.schools.slice().sort((a,b)=>(a.place??99)-(b.place??99)||b.percent-a.percent).map((sc,i)=>
+      `<div class="ar-row"><div class="ar-info"><div class="ar-name">${esc(sc.place??i+1)}. ${esc(sc.school)}</div><div class="ar-school">${esc(sc.adjudicatorScore)} / ${esc(sc.outOf)}</div></div><div class="ar-num">${esc(sc.percent)}%</div></div>`).join('')+'</div>';
+  }
+  if(mode==='combined'&&!data.nominees.some(n=>n.combinedScore!==undefined)){box.innerHTML='<div class="empty">Combined scores are not available for this year.</div>';return;}
+  if(mode==='votes'&&!hasVotes){
+    box.innerHTML='<div class="empty">Public vote counts for this year are not in the archive.</div>';return;
+  }
+  const cats=[...new Set(data.nominees.map(n=>n.category))];
+  html+=cats.map(c=>{
+    const rows=data.nominees.filter(n=>n.category===c).sort((a,b)=>((b[key]===null||b[key]===undefined)?-1:b[key])-((a[key]===null||a[key]===undefined)?-1:a[key])).map((n,i)=>{
+      const photo=n.photoUrl?`<img src="${esc(n.photoUrl)}" alt="${esc(n.name)}" loading="lazy">`:`<div class="ph">${esc((n.name||'?').replace('CDT ','')[0]).toUpperCase()}</div>`;
+      const val=n[key];
+      const unit=mode==='votes'?'votes':mode==='combined'?'%':(n.judgeAppiagyei!==undefined?'%':'/100');
+      const num=val===null||val===undefined||val===''?'<small>n/a</small>':esc(val)+(unit==='%'?'%':'')+(unit==='votes'?'<small>votes</small>':unit==='/100'?'<small>/100</small>':'');
+      const sub=[n.school,n.code].filter(Boolean).map(esc).join(' · ')+(mode==='votes'&&n.votePercent!==undefined?` · ${esc(n.votePercent)}%`:'')+(mode==='combined'?` · Judges ${esc(n.judgeScore)}% · Votes ${esc(n.votePercent)}%`:'')+(mode==='judges'&&n.judgeAppiagyei!==undefined?` · Appiagyei ${n.judgeAppiagyei}% / Leticia ${n.judgeLeticia}%`:'');
+      return `<div class="ar-row">${photo}<div class="ar-info"><div class="ar-name">${i+1}. ${esc(n.name)}</div><div class="ar-school">${sub}</div></div><div class="ar-num">${num}</div></div>`;
+    }).join('');
+    return `<div class="cat-section"><h3>${esc(c)}</h3>${rows}</div>`;
+  }).join('');
+  if(mode==='judges'&&data.schools){
+    html+='<div class="cat-section"><h3>Adjudicators\' remarks</h3>'+data.schools.map(sc=>(sc.remarks||[]).length?`<div class="card" style="padding:16px 20px;margin-bottom:10px"><h3 style="font-size:15px;margin-bottom:6px">${esc(sc.school)}</h3>`+sc.remarks.map(r=>`<p style="font-size:13.5px"><strong>${esc(r.judge)}:</strong> &ldquo;${esc(r.remark)}&rdquo;</p>`).join('')+'</div>':'').join('')+'</div>';
+  }
+  if(data.note)html+=`<p style="opacity:.5;font-size:12px;text-align:center;margin-top:14px">${esc(data.note)}</p>`;
+  box.innerHTML=html;
+}
+async function loadYear(y){
+  box.innerHTML='<div class="loading">Loading…</div>';
+  try{const r=await fetch(`archive-${y}.json`,{cache:'no-cache'});data=await r.json();}catch(e){data=null;}
+  if(data&&data.nominees&&data.nominees.length&&!data.nominees.some(n=>n.votes!==null&&n.votes!==undefined))setMode('judges');else render();
+}
+function setMode(m){mode=m;vBtn.classList.toggle('on',m==='votes');jBtn.classList.toggle('on',m==='judges');cBtn.classList.toggle('on',m==='combined');render();}
+cBtn.onclick=()=>setMode('combined');vBtn.onclick=()=>setMode('votes');jBtn.onclick=()=>setMode('judges');
+sel.onchange=()=>loadYear(sel.value);
+(async function(){
+  let years=[];
+  try{years=await (await fetch('archive-years.json',{cache:'no-cache'})).json();}catch(e){}
+  years.sort((a,b)=>b-a);
+  sel.innerHTML=years.map(y=>`<option>${y}</option>`).join('');
+  if(years.length)loadYear(years[0]);else box.innerHTML='<div class="empty">No archived years yet.</div>';
+  // Snapshot tool: open ctva-archive.html?snapshot=2026
+  const snap=new URLSearchParams(location.search).get('snapshot');
+  if(snap){
+    dlBtn.hidden=false;dlBtn.textContent='Download '+snap+' archive file';
+    dlBtn.onclick=async()=>{
+      const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'getRecords'})});
+      const d=await res.json();
+      const out={year:+snap,savedOn:new Date().toISOString().slice(0,10),nominees:(d.nominees||[]).map(n=>({name:n.name,school:n.school,category:n.category,photoUrl:n.photoUrl||'',votes:n.votes??null,judgeScore:n.judgeScore??null}))};
+      const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(out,null,2)],{type:'application/json'}));a.download=snap+'.json';a.click();
+    };
+  }
+})();
+</script>
+</body>
+</html>

@@ -83,6 +83,17 @@ footer a{color:#9fd8ff;text-decoration:none;}
 .empty,.loading{opacity:.5;text-align:center;padding:40px 0;font-size:13px;}
 
 
+
+.slideshow{position:relative;max-width:1000px;margin:10px auto 22px;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.1);background:rgba(0,0,0,.25);aspect-ratio:16/9;}
+.slideshow img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .8s;}
+.slideshow img.on{opacity:1;}
+.ss-cap{position:absolute;left:0;right:0;bottom:0;padding:26px 18px 14px;background:linear-gradient(transparent,rgba(0,0,0,.7));font-size:14px;font-weight:600;}
+.ss-btn{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.45);color:#fff;border:none;width:40px;height:40px;border-radius:50%;font-size:20px;cursor:pointer;}
+.ss-btn:hover{background:rgba(255,215,0,.8);color:#0f3460;}
+.ss-prev{left:12px;}.ss-next{right:12px;}
+.ss-dots{position:absolute;bottom:10px;right:14px;display:flex;gap:6px;}
+.ss-dots i{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.4);cursor:pointer;}
+.ss-dots i.on{background:#FFD700;}
 </style>
 </head>
 <body>
@@ -96,6 +107,7 @@ footer a{color:#9fd8ff;text-decoration:none;}
 <a class="" href="ctva-vote-results.html">Vote Results</a>
 <a class="" href="ctva-nominees.html">Nominees</a>
 <a class="" href="ctva-judges-ratings.html">Judges' Ratings</a>
+<a class="" href="ctva-archive.html">Archive</a>
 <a class="" href="ctva-vote-online.html">Vote Online</a>
 <a class="" href="ctva-contact.html">Contact Us</a>
 <a class="nav-register" href="https://cadetmediaoffice.github.io/TV-Personality-Awards/tv_awards_register.html" target="_blank" rel="noopener">Register</a>
@@ -109,6 +121,7 @@ footer a{color:#9fd8ff;text-decoration:none;}
   <h1>Cadet TV Personality<br><span>Awards 2026</span></h1>
   <p class="sub">Discovering, nurturing and celebrating young broadcasting talent across Ghana's schools.</p>
 </div>
+<div class="wrap" style="padding-bottom:0;"><div class="slideshow" id="slideshow" hidden></div></div>
 <div class="wrap">
 
 <div class="card" style="text-align:center;">
@@ -147,5 +160,24 @@ footer a{color:#9fd8ff;text-decoration:none;}
 </footer>
 
 
+<script>
+(async function(){
+  const box=document.getElementById('slideshow');
+  let slides=[];
+  try{const r=await fetch('slides.json',{cache:'no-cache'});slides=await r.json();}catch(e){}
+  if(!slides.length)return;
+  box.hidden=false;
+  box.innerHTML=slides.map((s,i)=>`<img src="${s.src}" alt="${s.caption||'CTVA photo'}" class="${i?'':'on'}" loading="${i?'lazy':'eager'}">`).join('')
+   +'<div class="ss-cap"></div><button class="ss-btn ss-prev" aria-label="Previous">&#8249;</button><button class="ss-btn ss-next" aria-label="Next">&#8250;</button><div class="ss-dots">'+slides.map((_,i)=>`<i data-i="${i}"></i>`).join('')+'</div>';
+  const imgs=box.querySelectorAll('img'),dots=box.querySelectorAll('.ss-dots i'),cap=box.querySelector('.ss-cap');
+  let cur=0,t;
+  function show(i){cur=(i+slides.length)%slides.length;imgs.forEach((m,k)=>m.classList.toggle('on',k===cur));dots.forEach((d,k)=>d.classList.toggle('on',k===cur));cap.textContent=slides[cur].caption||'';cap.style.display=slides[cur].caption?'':'none';}
+  function auto(){clearInterval(t);t=setInterval(()=>show(cur+1),4500);}
+  box.querySelector('.ss-prev').onclick=()=>{show(cur-1);auto();};
+  box.querySelector('.ss-next').onclick=()=>{show(cur+1);auto();};
+  dots.forEach(d=>d.onclick=()=>{show(+d.dataset.i);auto();});
+  show(0);auto();
+})();
+</script>
 </body>
 </html>
