@@ -84,7 +84,7 @@ h1{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:clamp(22p
   <div id="loginView">
     <div class="lock">🔐</div>
     <h1>CTVA 2026 Admin</h1>
-    <p class="sub">Nominee approval, Nalo voting results &amp; judges' scores</p>
+    <p class="sub">Nominee approval, voting results &amp; judges' scores</p>
     <input type="password" id="pwInput" placeholder="Admin password">
     <button id="loginBtn">Enter</button>
     <div id="loginErr">Incorrect password.</div>
@@ -92,12 +92,10 @@ h1{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:clamp(22p
 
   <div id="dashView">
     <h1>CTVA 2026 Admin</h1>
-    <p class="sub">Nominee approval, Nalo voting results &amp; judges' scores</p>
+    <p class="sub">Nominee approval, voting results &amp; judges' scores</p>
 
     <div class="tabs">
-      <button class="tab-btn active" data-tab="pending">Pending</button>
-      <button class="tab-btn" data-tab="approved">Approved</button>
-      <button class="tab-btn" data-tab="rejected">Rejected</button>
+      <button class="tab-btn active" data-tab="all">Nominees &amp; Codes</button>
       <button class="tab-btn" data-tab="logvotes">Log Votes</button>
       <button class="tab-btn" data-tab="judgescores">Judges' Scores</button>
     </div>
@@ -139,7 +137,7 @@ h1{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:clamp(22p
 
   let password = '';
   let allNominees = [];
-  let currentTab = 'pending';
+  let currentTab = 'all';
 
   const loginView = document.getElementById('loginView');
   const dashView = document.getElementById('dashView');
@@ -216,10 +214,11 @@ h1{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:clamp(22p
   });
 
   function render(){
-    const items = allNominees.filter(n => n.status === currentTab);
+    // Every registered nominee is listed automatically; no approval step.
+    const items = allNominees.filter(n => n.status !== 'rejected');
     listEl.innerHTML = '';
     if (items.length === 0) {
-      listEl.innerHTML = `<div class="empty">No ${currentTab} nominees.</div>`;
+      listEl.innerHTML = '<div class="empty">No nominees have registered yet.</div>';
       return;
     }
     items.forEach(n => {
@@ -228,19 +227,13 @@ h1{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:clamp(22p
       const photoHtml = n.photoUrl
         ? `<img src="${n.photoUrl}" alt="${n.name}">`
         : `<div class="ph">${(n.name||'?').charAt(0).toUpperCase()}</div>`;
-
-      let actionsHtml = `<span class="status-pill ${n.status}">${n.status}</span>`;
-      if (currentTab === 'pending') {
-        actionsHtml = `
-          <div class="actions">
-            <input class="code-input" type="text" placeholder="Nalo code" id="code-${n.ref}">
-            <button class="approve-btn" data-ref="${n.ref}" data-act="approveNominee">Approve</button>
-            <button class="reject-btn" data-ref="${n.ref}" data-act="rejectNominee">Reject</button>
-          </div>`;
-      }
-
-      const codeHtml = n.status === 'approved' && n.naloCode ? `<div class="rcode">Nalo code: ${n.naloCode}</div>` : '';
-
+      const hasCode = !!n.naloCode;
+      const actionsHtml = `
+        <div class="actions">
+          <input class="code-input" type="text" placeholder="Voting code" id="code-${n.ref}" value="${hasCode ? n.naloCode : ''}">
+          <button class="approve-btn" data-ref="${n.ref}" data-act="approveNominee">${hasCode ? 'Update code' : 'Save code'}</button>
+        </div>`;
+      const codeHtml = `<div class="rcode">Voting code: ${hasCode ? n.naloCode : 'Pending'}</div>`;
       row.innerHTML = `
         ${photoHtml}
         <div class="info">
@@ -248,7 +241,7 @@ h1{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:clamp(22p
           <div class="rmeta">${n.category} · ${n.school || ''}</div>
           ${codeHtml}
         </div>
-        <div class="rvotes">${n.status === 'approved' ? n.votes + ' votes' : ''}</div>
+        <div class="rvotes">${hasCode ? n.votes + ' votes' : ''}</div>
         ${actionsHtml}
       `;
       listEl.appendChild(row);
@@ -268,7 +261,7 @@ h1{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:clamp(22p
       const codeInput = document.getElementById('code-' + ref);
       const naloCode = codeInput ? codeInput.value.trim() : '';
       if (!naloCode) {
-        alert('Enter the Nalo code assigned to this nominee before approving.');
+        alert('Enter the voting code for this nominee.');
         return;
       }
       extra.naloCode = naloCode;
@@ -279,7 +272,7 @@ h1{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:clamp(22p
     if (data.status === 'ok') {
       const nom = allNominees.find(n => n.ref === ref);
       if (nom) {
-        nom.status = act === 'approveNominee' ? 'approved' : 'rejected';
+        nom.status = 'approved';
         if (act === 'approveNominee') nom.naloCode = extra.naloCode;
       }
       render();
@@ -295,9 +288,9 @@ h1{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:clamp(22p
   function renderLogGroups(){
     const groupsEl = document.getElementById('logGroups');
     groupsEl.innerHTML = '';
-    const approved = allNominees.filter(n => n.status === 'approved');
+    const approved = allNominees.filter(n => n.naloCode && n.status !== 'rejected');
     if (approved.length === 0) {
-      groupsEl.innerHTML = '<div class="empty">No approved nominees yet — approve some first.</div>';
+      groupsEl.innerHTML = '<div class="empty">No nominees have a voting code yet — add codes first.</div>';
       return;
     }
     CATEGORIES.forEach(cat => {
@@ -309,7 +302,7 @@ h1{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:clamp(22p
         <div class="card-row">
           <div class="info">
             <div class="rname">${n.name}</div>
-            <div class="rmeta">Nalo code: ${n.naloCode || '—'} · current: ${n.votes}</div>
+            <div class="rmeta">Voting code: ${n.naloCode || '—'} · current: ${n.votes}</div>
           </div>
           <input class="votes-input" type="number" min="0" placeholder="Votes" data-vote-ref="${n.ref}">
         </div>
@@ -372,9 +365,9 @@ h1{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:clamp(22p
   function renderJudgeGroups(){
     const groupsEl = document.getElementById('judgeGroups');
     groupsEl.innerHTML = '';
-    const approved = allNominees.filter(n => n.status === 'approved');
+    const approved = allNominees.filter(n => n.status !== 'rejected');
     if (approved.length === 0) {
-      groupsEl.innerHTML = '<div class="empty">No approved nominees yet — approve some first.</div>';
+      groupsEl.innerHTML = '<div class="empty">No nominees have registered yet.</div>';
       return;
     }
     CATEGORIES.forEach(cat => {

@@ -280,10 +280,10 @@ footer a{color:#9fd8ff;text-decoration:none;}
       document.getElementById('lrJudge').textContent = (data.judgeScore === null || data.judgeScore === undefined) ? 'Not yet' : data.judgeScore;
     } else if (data.regStatus === 'pending') {
       stats.style.display = 'none';
-      msg.textContent = 'Your registration is still under review by the awards committee. Check back soon.';
+      msg.textContent = 'Your registration has been received. Your voting code will appear on the Nominees page once it is assigned.';
     } else {
       stats.style.display = 'none';
-      msg.textContent = 'This registration was not approved for the ballot.';
+      msg.textContent = 'This registration is not on the ballot.';
     }
   }
 
@@ -343,7 +343,7 @@ footer a{color:#9fd8ff;text-decoration:none;}
     const nominees = allNominees.filter(n => n.category === cat).sort((a,b) => b.votes - a.votes);
     rankList.innerHTML = '';
     if (nominees.length === 0) {
-      rankList.innerHTML = '<div class="empty">No approved nominees in this category yet.</div>';
+      rankList.innerHTML = '<div class="empty">No nominees in this category yet.</div>';
       return;
     }
     nominees.forEach((n, idx) => {

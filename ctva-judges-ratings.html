@@ -182,7 +182,7 @@ footer a{color:#9fd8ff;text-decoration:none;}
         section.innerHTML = `<h3>${cat}</h3>${rows}`;
         container.appendChild(section);
       });
-      if (!any) container.innerHTML = '<div class="empty">No approved nominees yet.</div>';
+      if (!any) container.innerHTML = '<div class="empty">No nominees registered yet.</div>';
     } catch (err) {
       container.innerHTML = '<div class="empty">Could not load ratings. Please refresh.</div>';
     }

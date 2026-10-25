@@ -119,7 +119,7 @@ footer a{color:#9fd8ff;text-decoration:none;}
 <div class="page-hero">
   <div class="badge">Meet The Field</div>
   <h1>Our<br><span>Nominees</span></h1>
-  <p class="sub">Approved nominees by category, with their official Nalo voting code.</p>
+  <p class="sub">Registered nominees by category, with their official voting code.</p>
 </div>
 <div class="wrap">
 <div id="nomineesContainer"><div class="loading">Loading nominees…</div></div>
@@ -158,7 +158,7 @@ footer a{color:#9fd8ff;text-decoration:none;}
       container.innerHTML = '';
       let any = false;
       CATEGORIES.forEach(cat => {
-        const list = all.filter(n => n.category === cat);
+        const list = all.filter(n => n.category === cat && n.status !== 'rejected');
         if (list.length === 0) return;
         any = true;
         const section = document.createElement('div');
@@ -171,7 +171,7 @@ footer a{color:#9fd8ff;text-decoration:none;}
               <div class="nc-body">
                 <div class="nc-name">${n.name}</div>
                 <div class="nc-school">${n.school || ''}</div>
-                ${n.naloCode ? `<div class="nc-code">Nalo code: ${n.naloCode}</div>` : ''}
+                <div class="nc-code"${n.naloCode ? '' : ' style="opacity:.6"'}>Voting Code: ${n.naloCode ? n.naloCode : 'Pending'}</div>
               </div>
             </div>
           `;
@@ -179,7 +179,7 @@ footer a{color:#9fd8ff;text-decoration:none;}
         section.innerHTML = `<h3>${cat}</h3><div class="nominee-grid">${cards}</div>`;
         container.appendChild(section);
       });
-      if (!any) container.innerHTML = '<div class="empty">No approved nominees yet. Check back soon!</div>';
+      if (!any) container.innerHTML = '<div class="empty">No nominees registered yet. Check back soon!</div>';
     } catch (err) {
       container.innerHTML = '<div class="empty">Could not load nominees. Please refresh.</div>';
     }

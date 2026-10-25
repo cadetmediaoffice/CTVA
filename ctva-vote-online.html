@@ -126,14 +126,14 @@ table.code-table td{padding:8px;border-bottom:1px solid rgba(255,255,255,0.06);}
 <div class="page-hero">
   <div class="badge">Vote Now</div>
   <h1>Vote<br><span>Online</span></h1>
-  <p class="sub">Support your favorite nominee via our official Nalo SMS/USSD voting line.</p>
+  <p class="sub">Support your favorite nominee via our official SMS/USSD voting line.</p>
 </div>
 <div class="wrap">
 
 <div class="card">
   <h2>How To Vote via SMS/USSD</h2>
   <ol class="steps">
-    <li>Dial the official Nalo shortcode below from your phone.</li>
+    <li>Dial the official voting shortcode below from your phone.</li>
     <li>Enter the Nominee Code (find it on the Nominees page or the table below).</li>
     <li>Enter the number of votes you want to cast.</li>
     <li>Confirm payment.</li>
@@ -148,7 +148,7 @@ table.code-table td{padding:8px;border-bottom:1px solid rgba(255,255,255,0.06);}
   <div class="lookup-table-wrap">
     <input type="text" class="lookup-filter" id="codeFilter" placeholder="Search by name or category…">
     <table class="code-table">
-      <thead><tr><th>Name</th><th>Category</th><th>Nalo Code</th></tr></thead>
+      <thead><tr><th>Name</th><th>Category</th><th>Voting Code</th></tr></thead>
       <tbody id="codeTableBody"><tr><td colspan="3" class="loading">Loading…</td></tr></tbody>
     </table>
   </div>
@@ -180,7 +180,7 @@ table.code-table td{padding:8px;border-bottom:1px solid rgba(255,255,255,0.06);}
         body: JSON.stringify({ action: 'getRecords' })
       });
       const data = await res.json();
-      allNominees = (data.nominees || []).filter(n => n.naloCode);
+      allNominees = (data.nominees || []).filter(n => n.status !== 'rejected');
       render(allNominees);
     } catch (err) {
       tbody.innerHTML = '<tr><td colspan="3" class="empty">Could not load codes. Please refresh.</td></tr>';
@@ -189,11 +189,11 @@ table.code-table td{padding:8px;border-bottom:1px solid rgba(255,255,255,0.06);}
 
   function render(list){
     if (list.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="3" class="empty">No approved nominees yet.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="3" class="empty">No nominees registered yet.</td></tr>';
       return;
     }
     tbody.innerHTML = list.map(n => `
-      <tr><td>${n.name}</td><td>${n.category}</td><td><strong style="color:#FFD700;">${n.naloCode}</strong></td></tr>
+      <tr><td>${n.name}</td><td>${n.category}</td><td>${n.naloCode ? `<strong style="color:#FFD700;">${n.naloCode}</strong>` : '<span style="opacity:.6">Pending</span>'}</td></tr>
     `).join('');
   }
 
