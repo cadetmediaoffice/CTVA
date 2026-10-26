@@ -140,6 +140,22 @@ footer a{color:#9fd8ff;text-decoration:none;}
 .closing h2{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:clamp(32px,8vw,60px);line-height:1.05;text-transform:uppercase;letter-spacing:1px;}
 .closing h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:clamp(20px,4.5vw,32px);color:#FFD700;text-transform:uppercase;letter-spacing:2px;margin-top:6px;}
 .closing p{opacity:.7;margin-top:16px;font-size:14.5px;}
+.naad-strip{max-width:1180px;margin:30px auto 0;padding:0 16px;text-align:center;}
+.naad-mark{display:block;width:100%;max-width:640px;height:auto;margin:0 auto 6px;}
+.naad-bar{background:#fff;border:2px solid #2a5db0;border-radius:22px;padding:6px;box-shadow:0 6px 24px rgba(0,0,0,.35);}
+.logo-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:1px;background:#dfe5ef;border-radius:16px;overflow:hidden;}
+.logo-item{background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:7px;padding:14px 4px 12px;}
+.logo-item .lg{height:62px;width:100%;display:flex;align-items:center;justify-content:center;}
+.logo-item img{max-height:62px;max-width:86%;width:auto;height:auto;object-fit:contain;}
+.logo-item span{font:700 11.5px/1.18 'Barlow Condensed',sans-serif;color:#0f2f66;text-transform:uppercase;padding:0 3px;}
+.naad-foot{display:flex;align-items:center;margin-top:16px;}
+.naad-foot i{flex:1;height:7px;border-radius:4px;}
+.naad-foot i.l{background:linear-gradient(90deg,#CE1126 0 33.3%,#FCD116 33.3% 66.6%,#006B3F 66.6%);}
+.naad-foot i.r{background:linear-gradient(90deg,#006B3F 0 33.3%,#FCD116 33.3% 66.6%,#CE1126 66.6%);}
+.naad-foot b{background:#0f2f66;border:2px solid #2a5db0;color:#fff;border-radius:30px;padding:9px 26px;font:700 clamp(12px,2.2vw,17px) 'Barlow Condensed',sans-serif;letter-spacing:1px;text-transform:uppercase;margin:0 -8px;position:relative;z-index:1;text-align:center;}
+@media (max-width:980px){.logo-grid{grid-template-columns:repeat(6,1fr);}.logo-item span{font-size:12.5px;}}
+@media (max-width:560px){.logo-grid{grid-template-columns:repeat(4,1fr);}.naad-foot i{display:none;}.naad-foot b{margin:0 auto;padding:9px 18px;}}
+@media (max-width:400px){.logo-grid{grid-template-columns:repeat(3,1fr);}}
 </style>
 <meta name="description" content="Cadet TV Personality Awards 2026 by Cadet Media Ghana: discovering and celebrating young broadcasting talent in Ghana's schools.">
 <meta name="theme-color" content="#0f3460">
@@ -169,6 +185,7 @@ footer a{color:#9fd8ff;text-decoration:none;}
 
 <div class="slideshow" id="slideshow" hidden></div>
 
+
 <div class="page-hero">
   <div class="eyebrow">Cadet Media Ghana Presents</div>
   <h1>Cadet TV Personality<br><span>Awards 2026</span></h1>
@@ -178,6 +195,27 @@ footer a{color:#9fd8ff;text-decoration:none;}
     <a class="btn" href="ctva-nominees.html">Explore Nominees</a>
     <a class="btn secondary" href="ctva-vote-online.html">Vote Now</a>
   </div>
+</div>
+
+<div class="naad-strip">
+  <img class="naad-mark" src="logos/naad-wordmark.png" alt="NAAD: National Academic Assessment Drive. Assess, Identify, Empower, Transform." width="868" height="288">
+  <div class="naad-bar">
+    <div class="logo-grid">
+      <div class="logo-item"><div class="lg"><img src="logos/cmg.png" alt="Cadet Media Ghana logo" loading="lazy"></div><span>Cadet Media Ghana</span></div>
+      <div class="logo-item"><div class="lg"><img src="logos/gnfs.png" alt="Ghana National Fire Service logo" loading="lazy"></div><span>Ghana National Fire Service</span></div>
+      <div class="logo-item"><div class="lg"><img src="logos/nadmo.png" alt="NADMO Ghana logo" loading="lazy"></div><span>NADMO Ghana</span></div>
+      <div class="logo-item"><div class="lg"><img src="logos/prisons.png" alt="Ghana Prisons Service logo" loading="lazy"></div><span>Ghana Prisons Service</span></div>
+      <div class="logo-item"><div class="lg"><img src="logos/police.png" alt="Ghana Police Service logo" loading="lazy"></div><span>Ghana Police Service</span></div>
+      <div class="logo-item"><div class="lg"><img src="logos/ambulance.png" alt="National Ambulance Service logo" loading="lazy"></div><span>National Ambulance Service</span></div>
+      <div class="logo-item"><div class="lg"><img src="logos/immigration.png" alt="Ghana Immigration Service logo" loading="lazy"></div><span>Ghana Immigration Service</span></div>
+      <div class="logo-item"><div class="lg"><img src="logos/customs.png" alt="Customs Division logo" loading="lazy"></div><span>Customs Division</span></div>
+      <div class="logo-item"><div class="lg"><img src="logos/gaf.png" alt="Ghana Armed Forces logo" loading="lazy"></div><span>Ghana Armed Forces</span></div>
+      <div class="logo-item"><div class="lg"><img src="logos/forestry.png" alt="Forestry Commission logo" loading="lazy"></div><span>Forestry Commission</span></div>
+      <div class="logo-item"><div class="lg"><img src="logos/nacoc.png" alt="Narcotics Control Commission logo" loading="lazy"></div><span>Narcotics Control Commission</span></div>
+      <div class="logo-item"><div class="lg"><img src="logos/tourism.png" alt="Tourism, Culture &amp; Creative Arts logo" loading="lazy"></div><span>Tourism, Culture &amp; Creative Arts</span></div>
+    </div>
+  </div>
+  <div class="naad-foot"><i class="l"></i><b>Building a safer, smarter and empowered Ghana</b><i class="r"></i></div>
 </div>
 
 <div class="wrap">
