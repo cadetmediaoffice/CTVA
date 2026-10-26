@@ -76,6 +76,26 @@ h1{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:clamp(22p
 .log-status{margin-top:16px;padding:12px 16px;border-radius:10px;font-size:14px;display:none;}
 .log-status.ok{display:block;background:rgba(0,230,118,.12);border:1px solid rgba(0,230,118,.35);color:#80ffb0;}
 .log-status.err{display:block;background:rgba(255,82,82,.12);border:1px solid rgba(255,82,82,.35);color:#ff9090;}
+
+.export-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+.export-bar select{background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:10px 12px;border-radius:8px;font-size:13px;max-width:100%;}
+.export-bar select option{color:#000;}
+.ex-btn{border:none;border-radius:8px;padding:10px 16px;font-weight:800;cursor:pointer;background:linear-gradient(45deg,#FFD700,#e6a800);color:#0f3460;font-family:'Barlow Condensed',sans-serif;letter-spacing:.5px;text-transform:uppercase;font-size:13px;}
+.ex-btn:disabled{opacity:.5;cursor:wait;}
+table.ex-table{width:100%;border-collapse:collapse;font-size:13.5px;}
+.ex-table th{text-align:left;padding:9px 8px;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#FFD700;border-bottom:1px solid rgba(255,255,255,0.2);}
+.ex-table td{padding:8px;border-bottom:1px solid rgba(255,255,255,0.08);vertical-align:middle;}
+.ex-table img,.ex-table .ex-ph{width:46px;height:56px;object-fit:cover;border-radius:6px;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-weight:700;}
+.ex-table img{display:block;}
+@media print{
+  body{background:#fff !important;color:#000 !important;}
+  body *{visibility:hidden;}
+  #exportArea,#exportArea *{visibility:visible;}
+  #exportArea{position:absolute;left:0;top:0;width:100%;}
+  .ex-table th{color:#000 !important;border-bottom:1px solid #000;}
+  .ex-table td{border-bottom:1px solid #bbb;color:#000;}
+  .ex-table tr{page-break-inside:avoid;}
+}
 </style>
 </head>
 <body>
@@ -100,6 +120,7 @@ h1{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:clamp(22p
       <button class="tab-btn" data-tab="rejected">Rejected</button>
       <button class="tab-btn" data-tab="logvotes">Log Votes</button>
       <button class="tab-btn" data-tab="judgescores">Judges' Scores</button>
+      <button class="tab-btn" data-tab="export">Export</button>
     </div>
 
     <div class="pane active" id="pane-list">
@@ -118,6 +139,22 @@ h1{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:clamp(22p
       <div class="log-status" id="logStatus"></div>
     </div>
 
+    <div class="pane" id="pane-export">
+      <div class="export-bar">
+        <select id="exCat"><option value="">All categories</option></select>
+        <select id="exStatus">
+          <option value="">All (except rejected)</option>
+          <option value="approved">Approved only</option>
+          <option value="coded">With Nalo code only</option>
+        </select>
+        <button class="ex-btn" id="exCsv">Download Excel/CSV</button>
+        <button class="ex-btn" id="exPrint">Print / Save as PDF</button>
+        <button class="ex-btn" id="exZip">Download photos (ZIP)</button>
+      </div>
+      <div class="log-status" id="exStatusMsg"></div>
+      <div id="exportArea"></div>
+    </div>
+
     <div class="pane" id="pane-judgescores">
       <div id="judgeGroups"></div>
       <div class="log-status" id="judgeStatus"></div>
@@ -125,6 +162,7 @@ h1{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:clamp(22p
   </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
   // ⚠️ Same Apps Script Web App URL as tv_awards_register.html:
   const API_URL = 'https://script.google.com/macros/s/AKfycbxfTkqqjtjXLXekfT-fODrdU-F3SzroDSCogLnOcICh1ImtKeLKFJK7Xb6f2K4jsQ0/exec';
@@ -204,7 +242,11 @@ h1{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:clamp(22p
       document.getElementById('pane-list').classList.remove('active');
       document.getElementById('pane-logvotes').classList.remove('active');
       document.getElementById('pane-judgescores').classList.remove('active');
-      if (currentTab === 'logvotes') {
+      document.getElementById('pane-export').classList.remove('active');
+      if (currentTab === 'export') {
+        document.getElementById('pane-export').classList.add('active');
+        renderExport();
+      } else if (currentTab === 'logvotes') {
         document.getElementById('pane-logvotes').classList.add('active');
       } else if (currentTab === 'judgescores') {
         document.getElementById('pane-judgescores').classList.add('active');
@@ -310,6 +352,100 @@ h1{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:clamp(22p
       btn.disabled = false;
     }
   }
+
+
+  // ---- Export tab ----
+  const exCat = document.getElementById('exCat');
+  CATEGORIES.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; exCat.appendChild(o); });
+  const exStatus = document.getElementById('exStatus');
+  const exMsg = document.getElementById('exStatusMsg');
+  const exEsc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  function exportList(){
+    const cat = exCat.value, st = exStatus.value;
+    const order = c => { const i = CATEGORIES.indexOf(c); return i === -1 ? 99 : i; };
+    return allNominees
+      .filter(n => n.status !== 'rejected')
+      .filter(n => !cat || n.category === cat)
+      .filter(n => st === 'approved' ? n.status === 'approved' : st === 'coded' ? !!n.naloCode : true)
+      .sort((a, b) => order(a.category) - order(b.category) || String(a.name).localeCompare(String(b.name)));
+  }
+  function exPhotoName(n){ return (n.category + ' - ' + n.name).replace(/[\\\/:*?"<>|]/g, '') + '.jpg'; }
+  function exPhotoId(url){ const m = String(url || '').match(/\/d\/([\w-]+)|[?&]id=([\w-]+)/); return m ? (m[1] || m[2]) : ''; }
+
+  function renderExport(){
+    const list = exportList();
+    if (!list.length) { document.getElementById('exportArea').innerHTML = '<div class="empty">No nominees match.</div>'; return; }
+    const rows = list.map((n, i) => {
+      const id = exPhotoId(n.photoUrl);
+      const letter = exEsc((n.name || '?').charAt(0).toUpperCase());
+      const photo = id
+        ? `<img src="${exEsc(n.photoUrl)}" alt="" referrerpolicy="no-referrer" onerror="if(!this.dataset.t){this.dataset.t=1;this.src='https://lh3.googleusercontent.com/d/${id}=w200';}else{this.outerHTML='<div class=&quot;ex-ph&quot;>${letter}</div>';}">`
+        : `<div class="ex-ph">${letter}</div>`;
+      return `<tr><td>${i + 1}</td><td>${photo}</td><td><b>${exEsc(n.name)}</b></td><td>${exEsc(n.school || '')}</td><td>${exEsc(n.category)}</td><td><b>${n.naloCode ? exEsc(n.naloCode) : '—'}</b></td></tr>`;
+    }).join('');
+    document.getElementById('exportArea').innerHTML =
+      '<h3 style="font-family:\'Barlow Condensed\',sans-serif;color:#FFD700;margin:0 0 8px;">Cadet TV Personality Awards 2026 — Nominees (' + list.length + ')</h3>' +
+      '<table class="ex-table"><thead><tr><th>#</th><th>Photo</th><th>Name</th><th>School</th><th>Category</th><th>Nalo Code</th></tr></thead><tbody>' + rows + '</tbody></table>';
+  }
+  exCat.addEventListener('change', renderExport);
+  exStatus.addEventListener('change', renderExport);
+  document.getElementById('exPrint').addEventListener('click', () => { renderExport(); setTimeout(() => window.print(), 400); });
+
+  function csvRows(list){
+    const q = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+    const head = ['No.', 'Name', 'School', 'Category', 'Nalo Code', 'Photo File Name', 'Reference', 'Status'];
+    const lines = [head.map(q).join(',')];
+    list.forEach((n, i) => lines.push([i + 1, n.name, n.school || '', n.category, n.naloCode || '', exPhotoId(n.photoUrl) ? exPhotoName(n) : 'NO PHOTO', n.ref, n.status].map(q).join(',')));
+    return '\ufeff' + lines.join('\r\n');
+  }
+  function saveBlob(blob, name){
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  }
+  document.getElementById('exCsv').addEventListener('click', () => {
+    const list = exportList();
+    if (!list.length) return;
+    saveBlob(new Blob([csvRows(list)], { type: 'text/csv;charset=utf-8' }), 'CTVA-2026-nominees.csv');
+  });
+
+  // Photos come from the backend (getPhotos) because Drive images can't be read directly by the browser.
+  document.getElementById('exZip').addEventListener('click', async () => {
+    const btn = document.getElementById('exZip');
+    const list = exportList().filter(n => exPhotoId(n.photoUrl));
+    if (!list.length) { exMsg.textContent = 'No photos to download.'; return; }
+    if (typeof JSZip === 'undefined') { exMsg.textContent = 'ZIP tool failed to load — check your internet and refresh.'; return; }
+    btn.disabled = true;
+    const zip = new JSZip();
+    let done = 0, missing = 0;
+    try {
+      for (let i = 0; i < list.length; i += 10) {
+        const batch = list.slice(i, i + 10);
+        exMsg.textContent = 'Getting photos… ' + done + ' of ' + list.length;
+        const ids = batch.map(n => exPhotoId(n.photoUrl));
+        const data = await api('getPhotos', { ids });
+        const photos = data.photos || {};
+        batch.forEach(n => {
+          const d = photos[exPhotoId(n.photoUrl)];
+          if (d && d.indexOf('base64,') !== -1) {
+            const ext = d.indexOf('image/png') === 5 ? '.png' : '.jpg';
+            zip.file(exPhotoName(n).replace(/\.jpg$/, ext), d.split('base64,')[1], { base64: true });
+            done++;
+          } else missing++;
+        });
+      }
+      zip.file('nominees.csv', csvRows(exportList()));
+      exMsg.textContent = 'Packing ZIP…';
+      const blob = await zip.generateAsync({ type: 'blob' });
+      saveBlob(blob, 'CTVA-2026-nominee-photos.zip');
+      exMsg.textContent = 'Done — ' + done + ' photos saved' + (missing ? ', ' + missing + ' could not be fetched (re-run fixPhotoSharing in Apps Script if many).' : '.');
+    } catch (e) {
+      exMsg.textContent = 'Could not build the ZIP: ' + e.message;
+    }
+    btn.disabled = false;
+  });
 
   // ---- Log Votes tab ----
   function renderLogGroups(){
