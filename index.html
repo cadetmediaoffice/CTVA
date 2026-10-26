@@ -85,8 +85,20 @@ footer a{color:#9fd8ff;text-decoration:none;}
 
 
 .slideshow{position:relative;max-width:1000px;margin:10px auto 22px;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.1);background:#0b1226;aspect-ratio:16/9;}
-.slideshow img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .8s;}
-.slideshow img.on{opacity:1;}
+.slideshow img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:translateY(100%);transition:transform .9s cubic-bezier(.65,0,.35,1);}
+.slideshow img.on{transform:translateY(0);}
+.slideshow img.out{transform:translateY(-100%);}
+.ss-cap,.ss-btn,.ss-dots{z-index:3;}
+.ticker{display:flex;align-items:stretch;background:#0b1226;border-bottom:1px solid rgba(255,215,0,0.25);overflow:hidden;}
+.ticker[hidden]{display:none;}
+.tk-label{flex:0 0 auto;background:linear-gradient(45deg,#FFD700,#e6a800);color:#0f3460;font:800 13px 'Barlow Condensed',sans-serif;letter-spacing:1.5px;text-transform:uppercase;padding:9px 14px;display:flex;align-items:center;z-index:2;}
+.tk-track{flex:1;overflow:hidden;position:relative;}
+.tk-move{display:inline-flex;white-space:nowrap;padding:9px 0;font-size:14px;font-weight:600;animation:tkscroll var(--dur,30s) linear infinite;}
+.tk-move span{padding:0 28px;}
+.tk-move span::after{content:"◆";color:#FFD700;margin-left:56px;font-size:10px;vertical-align:middle;}
+.ticker:hover .tk-move{animation-play-state:paused;}
+@keyframes tkscroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+@media (prefers-reduced-motion:reduce){.tk-move{animation:none;white-space:normal;}.slideshow img{transition:none;}}
 .ss-cap{position:absolute;left:0;right:0;bottom:0;padding:26px 18px 14px;background:linear-gradient(transparent,rgba(0,0,0,.7));font-size:14px;font-weight:600;}
 .ss-btn{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.45);color:#fff;border:none;width:40px;height:40px;border-radius:50%;font-size:20px;cursor:pointer;}
 .ss-btn:hover{background:rgba(255,215,0,.8);color:#0f3460;}
@@ -126,6 +138,8 @@ footer a{color:#9fd8ff;text-decoration:none;}
     </div>
   </div>
 </nav>
+
+<div class="ticker" id="ticker" hidden><div class="tk-label">Latest</div><div class="tk-track"><div class="tk-move" id="tkMove"></div></div></div>
 
 <div class="page-hero">
   <div class="badge">2026 Edition</div>
@@ -191,12 +205,41 @@ footer a{color:#9fd8ff;text-decoration:none;}
    +'<div class="ss-cap"></div><button class="ss-btn ss-prev" aria-label="Previous">&#8249;</button><button class="ss-btn ss-next" aria-label="Next">&#8250;</button><div class="ss-dots">'+slides.map((_,i)=>`<i data-i="${i}"></i>`).join('')+'</div>';
   const imgs=box.querySelectorAll('img'),dots=box.querySelectorAll('.ss-dots i'),cap=box.querySelector('.ss-cap');
   let cur=0,t;
-  function show(i){cur=(i+slides.length)%slides.length;imgs.forEach((m,k)=>m.classList.toggle('on',k===cur));dots.forEach((d,k)=>d.classList.toggle('on',k===cur));cap.textContent=slides[cur].caption||'';cap.style.display=slides[cur].caption?'':'none';}
+  let prevIdx=-1;
+  function show(i){
+    const next=(i+slides.length)%slides.length;
+    const old=cur;
+    cur=next;
+    // Park every slide that is neither leaving nor arriving below the frame, without animating.
+    imgs.forEach((m,k)=>{ if(k!==old&&k!==cur){ m.style.transition='none'; m.classList.remove('on','out'); } });
+    if(cur!==old){ const a=imgs[cur]; a.style.transition='none'; a.classList.remove('on','out'); void a.offsetWidth; }
+    void box.offsetWidth;
+    imgs.forEach(m=>{ m.style.transition=''; });
+    if(cur!==old) imgs[old].classList.replace('on','out');
+    imgs[cur].classList.remove('out'); imgs[cur].classList.add('on');
+    dots.forEach((d,k)=>d.classList.toggle('on',k===cur));
+    cap.textContent=slides[cur].caption||'';cap.style.display=slides[cur].caption?'':'none';
+  }
   function auto(){clearInterval(t);t=setInterval(()=>show(cur+1),4500);}
   box.querySelector('.ss-prev').onclick=()=>{show(cur-1);auto();};
   box.querySelector('.ss-next').onclick=()=>{show(cur+1);auto();};
   dots.forEach(d=>d.onclick=()=>{show(+d.dataset.i);auto();});
   show(0);auto();
+})();
+
+(async function(){
+  const bar=document.getElementById('ticker'),mv=document.getElementById('tkMove');
+  try{
+    const r=await fetch('https://script.google.com/macros/s/AKfycbxfTkqqjtjXLXekfT-fODrdU-F3SzroDSCogLnOcICh1ImtKeLKFJK7Xb6f2K4jsQ0/exec',{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'getTicker'})});
+    const d=await r.json();
+    const items=(d.items||[]).filter(Boolean);
+    if(d.status!=='ok'||d.enabled===false||!items.length)return;
+    // The list is written twice so the loop is seamless (the animation moves by exactly half).
+    [1,2].forEach(()=>items.forEach(t=>{const sp=document.createElement('span');sp.textContent=t;mv.appendChild(sp);}));
+    const chars=items.join('').length;
+    mv.style.setProperty('--dur',Math.max(18,Math.round(chars*0.22))+'s');
+    bar.hidden=false;
+  }catch(e){}
 })();
 </script>
 </body>

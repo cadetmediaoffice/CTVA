@@ -97,7 +97,6 @@ table.ex-table{width:100%;border-collapse:collapse;font-size:13.5px;}
   .ex-table tr{page-break-inside:avoid;}
 }
 </style>
-<meta name="robots" content="noindex,nofollow">
 </head>
 <body>
 
@@ -105,7 +104,7 @@ table.ex-table{width:100%;border-collapse:collapse;font-size:13.5px;}
   <div id="loginView">
     <div class="lock">🔐</div>
     <h1>CTVA 2026 Admin</h1>
-    <p class="sub">Nominee approval, voting results &amp; judges' scores</p>
+    <p class="sub">Nominee approval, Nalo voting results &amp; judges' scores</p>
     <input type="password" id="pwInput" placeholder="Admin password">
     <button id="loginBtn">Enter</button>
     <div id="loginErr">Incorrect password.</div>
@@ -113,7 +112,7 @@ table.ex-table{width:100%;border-collapse:collapse;font-size:13.5px;}
 
   <div id="dashView">
     <h1>CTVA 2026 Admin</h1>
-    <p class="sub">Nominee approval, voting results &amp; judges' scores</p>
+    <p class="sub">Nominee approval, Nalo voting results &amp; judges' scores</p>
 
     <div class="tabs">
       <button class="tab-btn active" data-tab="pending">Pending</button>
@@ -122,6 +121,7 @@ table.ex-table{width:100%;border-collapse:collapse;font-size:13.5px;}
       <button class="tab-btn" data-tab="logvotes">Log Votes</button>
       <button class="tab-btn" data-tab="judgescores">Judges' Scores</button>
       <button class="tab-btn" data-tab="export">Export</button>
+      <button class="tab-btn" data-tab="ticker">Ticker</button>
     </div>
 
     <div class="pane active" id="pane-list">
@@ -140,13 +140,21 @@ table.ex-table{width:100%;border-collapse:collapse;font-size:13.5px;}
       <div class="log-status" id="logStatus"></div>
     </div>
 
+    <div class="pane" id="pane-ticker">
+      <p style="opacity:.7;font-size:13px;margin-bottom:10px;">Messages that scroll across the top of the home page. One message per line (up to 20, 160 characters each). Changes go live as soon as you save.</p>
+      <textarea id="tkText" rows="8" style="width:100%;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:12px;border-radius:10px;font-size:14px;font-family:inherit;" placeholder="Voting opens 4 November 2026&#10;Dial *920*703# to vote&#10;Voting closes 9 December 2026"></textarea>
+      <label style="display:flex;gap:8px;align-items:center;margin:12px 0;font-size:14px;"><input type="checkbox" id="tkOn" checked> Show the scrolling text on the home page</label>
+      <button class="ex-btn" id="tkSave">Save ticker</button>
+      <div class="log-status" id="tkMsg"></div>
+    </div>
+
     <div class="pane" id="pane-export">
       <div class="export-bar">
         <select id="exCat"><option value="">All categories</option></select>
         <select id="exStatus">
           <option value="">All (except rejected)</option>
           <option value="approved">Approved only</option>
-          <option value="coded">With voting code only</option>
+          <option value="coded">With Nalo code only</option>
         </select>
         <button class="ex-btn" id="exCsv">Download Excel/CSV</button>
         <button class="ex-btn" id="exPrint">Print / Save as PDF</button>
@@ -177,8 +185,6 @@ table.ex-table{width:100%;border-collapse:collapse;font-size:13.5px;}
   ];
 
   let password = '';
-  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-
   let allNominees = [];
   let currentTab = 'pending';
 
@@ -246,7 +252,11 @@ table.ex-table{width:100%;border-collapse:collapse;font-size:13.5px;}
       document.getElementById('pane-logvotes').classList.remove('active');
       document.getElementById('pane-judgescores').classList.remove('active');
       document.getElementById('pane-export').classList.remove('active');
-      if (currentTab === 'export') {
+      document.getElementById('pane-ticker').classList.remove('active');
+      if (currentTab === 'ticker') {
+        document.getElementById('pane-ticker').classList.add('active');
+        loadTicker();
+      } else if (currentTab === 'export') {
         document.getElementById('pane-export').classList.add('active');
         renderExport();
       } else if (currentTab === 'logvotes') {
@@ -286,14 +296,14 @@ table.ex-table{width:100%;border-collapse:collapse;font-size:13.5px;}
       const row = document.createElement('div');
       row.className = 'card-row';
       const photoHtml = n.photoUrl
-        ? `<img src="${esc(n.photoUrl)}" alt="" onerror="this.outerHTML='<div class=&quot;ph&quot;>${(n.name||'?').charAt(0).toUpperCase()}</div>'">`
+        ? `<img src="${n.photoUrl}" alt="${n.name}" onerror="this.outerHTML='<div class=&quot;ph&quot;>${(n.name||'?').charAt(0).toUpperCase()}</div>'">`
         : `<div class="ph">${(n.name||'?').charAt(0).toUpperCase()}</div>`;
 
       let actionsHtml = `<span class="status-pill ${n.status}">${n.status}</span>`;
       if (currentTab === 'pending') {
         actionsHtml = `
           <div class="actions">
-            <input class="code-input" type="text" placeholder="Voting code (optional)" id="code-${n.ref}">
+            <input class="code-input" type="text" placeholder="Nalo code (optional)" id="code-${n.ref}">
             <button class="approve-btn" data-ref="${n.ref}" data-act="approveNominee">Approve</button>
             <button class="reject-btn" data-ref="${n.ref}" data-act="rejectNominee">Reject</button>
           </div>`;
@@ -302,18 +312,18 @@ table.ex-table{width:100%;border-collapse:collapse;font-size:13.5px;}
       if (currentTab === 'approved') {
         actionsHtml = `
           <div class="actions">
-            <input class="code-input" type="text" placeholder="Voting code" id="code-${n.ref}" value="${(n.naloCode||'').replace(/"/g,'&quot;')}">
+            <input class="code-input" type="text" placeholder="Nalo code" id="code-${n.ref}" value="${(n.naloCode||'').replace(/"/g,'&quot;')}">
             <button class="approve-btn" data-ref="${n.ref}" data-act="setNaloCode">Save code</button>
             <button class="reject-btn" data-ref="${n.ref}" data-act="rejectNominee">Reject</button>
           </div>`;
       }
-      const codeHtml = n.status === 'approved' && n.naloCode ? `<div class="rcode">Voting code: ${esc(n.naloCode)}</div>` : '';
+      const codeHtml = n.status === 'approved' && n.naloCode ? `<div class="rcode">Nalo code: ${n.naloCode}</div>` : '';
 
       row.innerHTML = `
         ${photoHtml}
         <div class="info">
-          <div class="rname">${esc(n.name)}</div>
-          <div class="rmeta">${esc(n.category)} · ${esc(n.school || '')}</div>
+          <div class="rname">${n.name}</div>
+          <div class="rmeta">${n.category} · ${n.school || ''}</div>
           ${codeHtml}
         </div>
         <div class="rvotes">${n.status === 'approved' ? n.votes + ' votes' : ''}</div>
@@ -357,6 +367,27 @@ table.ex-table{width:100%;border-collapse:collapse;font-size:13.5px;}
   }
 
 
+  // ---- Ticker tab ----
+  async function loadTicker(){
+    const msg = document.getElementById('tkMsg');
+    try {
+      const d = await api('getTicker');
+      document.getElementById('tkText').value = (d.items || []).join('\n');
+      document.getElementById('tkOn').checked = d.enabled !== false;
+      msg.textContent = '';
+    } catch (e) { msg.textContent = 'Could not load the ticker.'; }
+  }
+  document.getElementById('tkSave').addEventListener('click', async () => {
+    const msg = document.getElementById('tkMsg'), btn = document.getElementById('tkSave');
+    const items = document.getElementById('tkText').value.split('\n').map(x => x.trim()).filter(Boolean);
+    btn.disabled = true; msg.textContent = 'Saving…';
+    try {
+      const d = await api('setTicker', { items, enabled: document.getElementById('tkOn').checked });
+      msg.textContent = d.status === 'ok' ? 'Saved — ' + d.count + ' message(s) are live on the home page.' : (d.message || 'Save failed.');
+    } catch (e) { msg.textContent = 'Network error — try again.'; }
+    btn.disabled = false;
+  });
+
   // ---- Export tab ----
   const exCat = document.getElementById('exCat');
   CATEGORIES.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; exCat.appendChild(o); });
@@ -389,7 +420,7 @@ table.ex-table{width:100%;border-collapse:collapse;font-size:13.5px;}
     }).join('');
     document.getElementById('exportArea').innerHTML =
       '<h3 style="font-family:\'Barlow Condensed\',sans-serif;color:#FFD700;margin:0 0 8px;">Cadet TV Personality Awards 2026 — Nominees (' + list.length + ')</h3>' +
-      '<table class="ex-table"><thead><tr><th>#</th><th>Photo</th><th>Name</th><th>School</th><th>Category</th><th>Voting Code</th></tr></thead><tbody>' + rows + '</tbody></table>';
+      '<table class="ex-table"><thead><tr><th>#</th><th>Photo</th><th>Name</th><th>School</th><th>Category</th><th>Nalo Code</th></tr></thead><tbody>' + rows + '</tbody></table>';
   }
   exCat.addEventListener('change', renderExport);
   exStatus.addEventListener('change', renderExport);
@@ -397,7 +428,7 @@ table.ex-table{width:100%;border-collapse:collapse;font-size:13.5px;}
 
   function csvRows(list){
     const q = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
-    const head = ['No.', 'Name', 'School', 'Category', 'Voting Code', 'Photo File Name', 'Reference', 'Status'];
+    const head = ['No.', 'Name', 'School', 'Category', 'Nalo Code', 'Photo File Name', 'Reference', 'Status'];
     const lines = [head.map(q).join(',')];
     list.forEach((n, i) => lines.push([i + 1, n.name, n.school || '', n.category, n.naloCode || '', exPhotoId(n.photoUrl) ? exPhotoName(n) : 'NO PHOTO', n.ref, n.status].map(q).join(',')));
     return '\ufeff' + lines.join('\r\n');
@@ -454,9 +485,9 @@ table.ex-table{width:100%;border-collapse:collapse;font-size:13.5px;}
   function renderLogGroups(){
     const groupsEl = document.getElementById('logGroups');
     groupsEl.innerHTML = '';
-    const approved = allNominees.filter(n => n.status !== 'rejected');
+    const approved = allNominees.filter(n => n.status === 'approved');
     if (approved.length === 0) {
-      groupsEl.innerHTML = '<div class="empty">No registered nominees yet.</div>';
+      groupsEl.innerHTML = '<div class="empty">No approved nominees yet — approve some first.</div>';
       return;
     }
     CATEGORIES.forEach(cat => {
@@ -464,11 +495,11 @@ table.ex-table{width:100%;border-collapse:collapse;font-size:13.5px;}
       if (nominees.length === 0) return;
       const group = document.createElement('div');
       group.className = 'cat-group';
-      group.innerHTML = `<h3>${esc(cat)}</h3>` + nominees.map(n => `
+      group.innerHTML = `<h3>${cat}</h3>` + nominees.map(n => `
         <div class="card-row">
           <div class="info">
-            <div class="rname">${esc(n.name)}</div>
-            <div class="rmeta">Voting code: ${n.naloCode || '—'} · current: ${n.votes}</div>
+            <div class="rname">${n.name}</div>
+            <div class="rmeta">Nalo code: ${n.naloCode || '—'} · current: ${n.votes}</div>
           </div>
           <input class="votes-input" type="number" min="0" placeholder="Votes" data-vote-ref="${n.ref}">
         </div>
@@ -531,9 +562,9 @@ table.ex-table{width:100%;border-collapse:collapse;font-size:13.5px;}
   function renderJudgeGroups(){
     const groupsEl = document.getElementById('judgeGroups');
     groupsEl.innerHTML = '';
-    const approved = allNominees.filter(n => n.status !== 'rejected');
+    const approved = allNominees.filter(n => n.status === 'approved');
     if (approved.length === 0) {
-      groupsEl.innerHTML = '<div class="empty">No registered nominees yet.</div>';
+      groupsEl.innerHTML = '<div class="empty">No approved nominees yet — approve some first.</div>';
       return;
     }
     CATEGORIES.forEach(cat => {
@@ -541,10 +572,10 @@ table.ex-table{width:100%;border-collapse:collapse;font-size:13.5px;}
       if (nominees.length === 0) return;
       const group = document.createElement('div');
       group.className = 'cat-group';
-      group.innerHTML = `<h3>${esc(cat)}</h3>` + nominees.map(n => `
+      group.innerHTML = `<h3>${cat}</h3>` + nominees.map(n => `
         <div class="card-row">
           <div class="info">
-            <div class="rname">${esc(n.name)}</div>
+            <div class="rname">${n.name}</div>
             <div class="rmeta">Current score: ${n.judgeScore === null || n.judgeScore === undefined ? 'Not yet scored' : n.judgeScore + '/100'}</div>
           </div>
           <input class="score-input" type="number" min="0" max="100" placeholder="0-100" id="score-${n.ref}" value="${n.judgeScore ?? ''}">
