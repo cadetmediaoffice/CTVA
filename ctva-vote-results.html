@@ -134,6 +134,9 @@ table.vr-table{width:100%;border-collapse:collapse;font-size:14px;color:#222;min
   .vr-card{padding:8px;}
 }
 </style>
+<meta name="description" content="Cadet TV Personality Awards 2026 by Cadet Media Ghana: discovering and celebrating young broadcasting talent in Ghana's schools.">
+<meta name="theme-color" content="#0f3460">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><text y=%27.9em%27 font-size=%2790%27>🏆</text></svg>">
 </head>
 <body>
 
@@ -509,15 +512,12 @@ table.vr-table{width:100%;border-collapse:collapse;font-size:14px;color:#222;min
 
     const msg = document.getElementById('lrMessage');
     const stats = document.getElementById('lrStats');
-    if (data.regStatus === 'approved') {
-      msg.textContent = '';
+    if (data.regStatus !== 'rejected') {
+      msg.textContent = data.naloCode ? '' : 'Your voting code will appear on the Nominees page once it is assigned.';
       stats.style.display = 'flex';
       document.getElementById('lrVotes').textContent = (data.votes || 0).toLocaleString();
       document.getElementById('lrRank').textContent = data.rank ? (data.rank + ' of ' + data.totalInCategory) : '—';
       document.getElementById('lrJudge').textContent = (data.judgeScore === null || data.judgeScore === undefined) ? 'Not yet' : data.judgeScore;
-    } else if (data.regStatus === 'pending') {
-      stats.style.display = 'none';
-      msg.textContent = 'Your registration has been received. Your voting code will appear on the Nominees page once it is assigned.';
     } else {
       stats.style.display = 'none';
       msg.textContent = 'This registration is not on the ballot.';

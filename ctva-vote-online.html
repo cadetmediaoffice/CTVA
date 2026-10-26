@@ -102,6 +102,9 @@ table.code-table th{text-align:left;padding:8px;color:#FFD700;font-family:'Barlo
 table.code-table td{padding:8px;border-bottom:1px solid rgba(255,255,255,0.06);}
 
 </style>
+<meta name="description" content="Cadet TV Personality Awards 2026 by Cadet Media Ghana: discovering and celebrating young broadcasting talent in Ghana's schools.">
+<meta name="theme-color" content="#0f3460">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><text y=%27.9em%27 font-size=%2790%27>🏆</text></svg>">
 </head>
 <body>
 
@@ -134,12 +137,13 @@ table.code-table td{padding:8px;border-bottom:1px solid rgba(255,255,255,0.06);}
   <h2>How To Vote via SMS/USSD</h2>
   <ol class="steps">
     <li>Dial the official voting shortcode below from your phone.</li>
-    <li>Enter the Nominee Code (find it on the Nominees page or the table below).</li>
+    <li>Enter the nominee's voting code (find it on the Nominees page or the table below).</li>
     <li>Enter the number of votes you want to cast.</li>
     <li>Confirm payment.</li>
     <li>Enter your PIN to complete the transaction.</li>
   </ol>
   <div class="dial-code">Dial *920*703#</div>
+  <p style="text-align:center;font-weight:700;color:#FFD700;opacity:1;">Voting closes on 9 December 2026 at 23:59 GMT.</p>
   <p style="text-align:center;opacity:.7;">✅ Vote as many times as you like to support your favorite nominee!</p>
 </div>
 
@@ -165,6 +169,8 @@ table.code-table td{padding:8px;border-bottom:1px solid rgba(255,255,255,0.06);}
 <script>
   const API_URL = 'https://script.google.com/macros/s/AKfycbxfTkqqjtjXLXekfT-fODrdU-F3SzroDSCogLnOcICh1ImtKeLKFJK7Xb6f2K4jsQ0/exec';
   let allNominees = [];
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
   const tbody = document.getElementById('codeTableBody');
   const filterInput = document.getElementById('codeFilter');
 
@@ -193,7 +199,7 @@ table.code-table td{padding:8px;border-bottom:1px solid rgba(255,255,255,0.06);}
       return;
     }
     tbody.innerHTML = list.map(n => `
-      <tr><td>${n.name}</td><td>${n.category}</td><td>${n.naloCode ? `<strong style="color:#FFD700;">${n.naloCode}</strong>` : '<span style="opacity:.6">Pending</span>'}</td></tr>
+      <tr><td>${esc(n.name)}</td><td>${esc(n.category)}</td><td>${n.naloCode ? `<strong style="color:#FFD700;">${esc(n.naloCode)}</strong>` : '<span style="opacity:.6">Pending</span>'}</td></tr>
     `).join('');
   }
 
