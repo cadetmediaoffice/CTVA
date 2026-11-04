@@ -129,6 +129,13 @@ table.vr-table{width:100%;border-collapse:collapse;font-size:14px;color:#222;min
 .lr-stat .lbl{font-size:11px;opacity:.6;text-transform:uppercase;letter-spacing:1px;}
 .lookup-err{color:#ff9090;margin-top:14px;font-size:14px;display:none;}
 
+
+.my-code{margin-top:16px;padding:16px 18px;border:1.5px solid rgba(255,215,0,.5);border-radius:14px;background:rgba(255,215,0,.09);text-align:center;}
+.my-code .lbl{font:700 12px 'Barlow Condensed',sans-serif;letter-spacing:2px;text-transform:uppercase;opacity:.75;}
+.my-code .val{font:800 clamp(36px,10vw,54px) 'Barlow Condensed',sans-serif;color:#FFD700;letter-spacing:3px;line-height:1.1;}
+.my-code .how{font-size:13.5px;opacity:.85;margin-top:4px;}
+.my-code.none .val{font-size:18px;color:#fff;letter-spacing:0;font-weight:700;}
+
 @media (max-width:640px){
   .vr-panel{padding:20px 10px 16px;}
   .vr-card{padding:8px;}
@@ -201,6 +208,7 @@ table.vr-table{width:100%;border-collapse:collapse;font-size:14px;color:#222;min
           <div style="opacity:.6;font-size:13px;" id="lrMeta"></div>
         </div>
       </div>
+      <div class="my-code" id="lrCode" style="display:none;"></div>
       <div id="lrMessage" style="margin-top:14px;opacity:.8;font-size:14px;"></div>
       <div class="lr-stats" id="lrStats" style="display:none;">
         <div class="lr-stat"><div class="num" id="lrVotes">0</div><div class="lbl">Votes</div></div>
@@ -512,13 +520,23 @@ table.vr-table{width:100%;border-collapse:collapse;font-size:14px;color:#222;min
 
     const msg = document.getElementById('lrMessage');
     const stats = document.getElementById('lrStats');
+    const codeBox = document.getElementById('lrCode');
     if (data.regStatus !== 'rejected') {
-      msg.textContent = data.naloCode ? '' : 'Your voting code will appear on the Nominees page once it is assigned.';
+      codeBox.style.display = 'block';
+      if (data.naloCode) {
+        codeBox.className = 'my-code';
+        codeBox.innerHTML = '<div class="lbl">Your voting code</div><div class="val">' + esc(data.naloCode) + '</div><div class="how">Dial <b>*920*5#</b> and enter this code to vote.</div>';
+      } else {
+        codeBox.className = 'my-code none';
+        codeBox.innerHTML = '<div class="val">Your voting code has not been assigned yet. Please check back soon.</div>';
+      }
+      msg.textContent = '';
       stats.style.display = 'flex';
       document.getElementById('lrVotes').textContent = (data.votes || 0).toLocaleString();
       document.getElementById('lrRank').textContent = data.rank ? (data.rank + ' of ' + data.totalInCategory) : '—';
       document.getElementById('lrJudge').textContent = (data.judgeScore === null || data.judgeScore === undefined) ? 'Not yet' : data.judgeScore;
     } else {
+      codeBox.style.display = 'none';
       stats.style.display = 'none';
       msg.textContent = 'This registration is not on the ballot.';
     }
