@@ -101,6 +101,16 @@ table.code-table{width:100%;border-collapse:collapse;font-size:13.5px;}
 table.code-table th{text-align:left;padding:8px;color:#FFD700;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;font-size:11px;letter-spacing:.5px;border-bottom:1px solid rgba(255,255,255,0.15);}
 table.code-table td{padding:8px;border-bottom:1px solid rgba(255,255,255,0.06);}
 
+
+.my-code{margin-top:16px;padding:16px 18px;border:1.5px solid rgba(255,215,0,.5);border-radius:14px;background:rgba(255,215,0,.09);text-align:center;}
+.my-code .lbl{font:700 12px 'Barlow Condensed',sans-serif;letter-spacing:2px;text-transform:uppercase;opacity:.75;}
+.my-code .val{font:800 clamp(36px,10vw,54px) 'Barlow Condensed',sans-serif;color:#FFD700;letter-spacing:3px;line-height:1.1;}
+.my-code .how{font-size:13.5px;opacity:.85;margin-top:4px;}
+.my-code.none .val{font-size:18px;color:#fff;letter-spacing:0;font-weight:700;}
+
+.ref-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;}
+.ref-row input{flex:1;min-width:220px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:13px 16px;border-radius:10px;font-size:15px;letter-spacing:1px;}
+.ref-row button{background:linear-gradient(45deg,#FFD700,#e6a800);color:#0f3460;border:none;padding:13px 22px;border-radius:10px;font-weight:800;cursor:pointer;font-family:'Barlow Condensed',sans-serif;letter-spacing:.5px;text-transform:uppercase;}
 </style>
 <meta name="description" content="Cadet TV Personality Awards 2026 by Cadet Media Ghana: discovering and celebrating young broadcasting talent in Ghana's schools.">
 <meta name="theme-color" content="#0f3460">
@@ -142,9 +152,24 @@ table.code-table td{padding:8px;border-bottom:1px solid rgba(255,255,255,0.06);}
     <li>Confirm payment.</li>
     <li>Enter your PIN to complete the transaction.</li>
   </ol>
-  <div class="dial-code">Dial *920*703#</div>
+  <div class="dial-code">Dial *920*5#</div>
   <p style="text-align:center;font-weight:700;color:#FFD700;opacity:1;">Voting closes on 9 December 2026 at 23:59 GMT.</p>
   <p style="text-align:center;opacity:.7;">✅ Vote as many times as you like to support your favorite nominee!</p>
+</div>
+
+<div class="card">
+  <h2>Nominees: Find My Voting Code</h2>
+  <p>Enter the reference code you received when you registered (for example <code>CTVA-2026-AR-400087</code>) to see your voting code.</p>
+  <div class="ref-row">
+    <input type="text" id="myRef" placeholder="CTVA-2026-XXX-000000" autocomplete="off">
+    <button id="myRefBtn">Show my code</button>
+  </div>
+  <div id="myRefErr" style="color:#ff9090;margin-top:12px;font-size:14px;display:none;"></div>
+  <div id="myRefOut" style="display:none;margin-top:6px;">
+    <div style="font-weight:700;font-size:18px;margin-top:12px;" id="myRefName"></div>
+    <div style="opacity:.65;font-size:13px;" id="myRefMeta"></div>
+    <div class="my-code" id="myRefCode"></div>
+  </div>
 </div>
 
 <div class="card">
@@ -207,6 +232,30 @@ table.code-table td{padding:8px;border-bottom:1px solid rgba(255,255,255,0.06);}
     const q = filterInput.value.toLowerCase();
     render(allNominees.filter(n => n.name.toLowerCase().includes(q) || n.category.toLowerCase().includes(q)));
   });
+
+  // ---- Nominee self-service: reference code -> voting code ----
+  const myRef=document.getElementById('myRef'),myBtn=document.getElementById('myRefBtn'),myErr=document.getElementById('myRefErr'),myOut=document.getElementById('myRefOut');
+  async function findMyCode(){
+    const ref=myRef.value.trim();
+    myErr.style.display='none'; myOut.style.display='none';
+    if(!ref) return;
+    myBtn.disabled=true; myBtn.textContent='Checking…';
+    try{
+      const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'getMyResult',ref})});
+      const d=await res.json();
+      if(d.status!=='ok'){ myErr.textContent=d.message||'Reference code not found.'; myErr.style.display='block'; return; }
+      document.getElementById('myRefName').textContent=d.name;
+      document.getElementById('myRefMeta').textContent=d.category+(d.school?' · '+d.school:'');
+      const box=document.getElementById('myRefCode');
+      if(d.regStatus==='rejected'){ box.className='my-code none'; box.innerHTML='<div class="val">This registration is not on the ballot.</div>'; }
+      else if(d.naloCode){ box.className='my-code'; box.innerHTML='<div class="lbl">Your voting code</div><div class="val">'+esc(d.naloCode)+'</div><div class="how">Dial <b>*920*5#</b> and enter this code to vote.</div>'; }
+      else { box.className='my-code none'; box.innerHTML='<div class="val">Your voting code has not been assigned yet. Please check back soon.</div>'; }
+      myOut.style.display='block';
+    }catch(e){ myErr.textContent='Network error — please try again.'; myErr.style.display='block'; }
+    finally{ myBtn.disabled=false; myBtn.textContent='Show my code'; }
+  }
+  myBtn.addEventListener('click',findMyCode);
+  myRef.addEventListener('keydown',e=>{ if(e.key==='Enter') findMyCode(); });
 
   load();
 </script>
