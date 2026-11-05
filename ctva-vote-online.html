@@ -158,7 +158,9 @@ table.code-table td{padding:8px;border-bottom:1px solid rgba(255,255,255,0.06);}
 </div>
 
 <div class="card">
-  <h2>Nominees: Find My Voting Code</h2>
+  <h2>Find Your Voting Code</h2>
+
+  <h3 style="font-family:'Barlow Condensed',sans-serif;color:#fff;font-size:16px;letter-spacing:.5px;text-transform:uppercase;margin:6px 0 4px;">Nominees: use your reference code</h3>
   <p>Enter the reference code you received when you registered (for example <code>CTVA-2026-AR-400087</code>) to see your voting code.</p>
   <div class="ref-row">
     <input type="text" id="myRef" placeholder="CTVA-2026-XXX-000000" autocomplete="off">
@@ -170,10 +172,8 @@ table.code-table td{padding:8px;border-bottom:1px solid rgba(255,255,255,0.06);}
     <div style="opacity:.65;font-size:13px;" id="myRefMeta"></div>
     <div class="my-code" id="myRefCode"></div>
   </div>
-</div>
 
-<div class="card">
-  <h2>Find a Nominee's Code</h2>
+  <h3 style="font-family:'Barlow Condensed',sans-serif;color:#fff;font-size:16px;letter-spacing:.5px;text-transform:uppercase;margin:26px 0 8px;padding-top:18px;border-top:1px solid rgba(255,255,255,0.12);">Everyone: search the full list</h3>
   <div class="lookup-table-wrap">
     <input type="text" class="lookup-filter" id="codeFilter" placeholder="Search by name or category…">
     <table class="code-table">
@@ -199,22 +199,29 @@ table.code-table td{padding:8px;border-bottom:1px solid rgba(255,255,255,0.06);}
   const tbody = document.getElementById('codeTableBody');
   const filterInput = document.getElementById('codeFilter');
 
-  async function load(){
+  async function fetchList(action){
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action })
+    });
+    const data = await res.json();
+    if (data.status !== 'ok') throw new Error(data.message || 'bad response');
+    return (data.nominees || []).filter(n => n.status !== 'rejected');
+  }
+  async function load(attempt){
+    attempt = attempt || 1;
     if (API_URL.includes('PASTE_YOUR')) {
       tbody.innerHTML = '<tr><td colspan="3" class="empty">Backend URL not configured yet.</td></tr>';
       return;
     }
     try {
-      const res = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: 'getRecords' })
-      });
-      const data = await res.json();
-      allNominees = (data.nominees || []).filter(n => n.status !== 'rejected');
+      try { allNominees = await fetchList('getRecords'); }
+      catch (e) { allNominees = await fetchList('getAllNominees'); }
       render(allNominees);
     } catch (err) {
-      tbody.innerHTML = '<tr><td colspan="3" class="empty">Could not load codes. Please refresh.</td></tr>';
+      if (attempt < 3) { setTimeout(() => load(attempt + 1), 1500 * attempt); return; }
+      tbody.innerHTML = '<tr><td colspan="3" class="empty">Could not load codes (' + esc(err.message || 'network') + '). <a href="#" onclick="load();return false;" style="color:#FFD700;">Try again</a></td></tr>';
     }
   }
 

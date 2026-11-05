@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /ctva-admin.html
+
+Sitemap: https://cadetmediaoffice.github.io/CTVA/sitemap.xml
