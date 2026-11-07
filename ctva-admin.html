@@ -247,6 +247,25 @@ table.ex-table{width:100%;border-collapse:collapse;font-size:13.5px;}
     renderJudgeGroups();
   }
 
+  // Quietly pull new registrations / changes every 30 s and when the tab is reopened.
+  // Skipped while you are typing, or on the Log Votes / Judges' Scores tabs, so nothing you typed is lost.
+  async function softRefresh(){
+    if (document.hidden || dashView.style.display !== 'block') return;
+    const el = document.activeElement;
+    if (el && /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)) return;
+    if (currentTab === 'logvotes' || currentTab === 'judgescores' || currentTab === 'ticker') return;
+    try {
+      const data = await api('getAllAdmin');
+      if (data.status !== 'ok') return;
+      allNominees = data.nominees || [];
+      unifySchools();
+      if (currentTab === 'export') renderExport(); else render();
+    } catch (e) {}
+  }
+  setInterval(softRefresh, 30000);
+  document.addEventListener('visibilitychange', softRefresh);
+  window.addEventListener('focus', softRefresh);
+
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));

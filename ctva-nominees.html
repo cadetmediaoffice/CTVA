@@ -134,9 +134,6 @@ tr.leader .vote-num{color:#FFD700;}
   .lead-tag{display:block;margin:4px 0 0;width:max-content;}
 }
 </style>
-<meta name="description" content="Cadet TV Personality Awards 2026 by Cadet Media Ghana: discovering and celebrating young broadcasting talent in Ghana's schools.">
-<meta name="theme-color" content="#0f3460">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><text y=%27.9em%27 font-size=%2790%27>🏆</text></svg>">
 </head>
 <body>
 
@@ -351,10 +348,11 @@ tr.leader .vote-num{color:#FFD700;}
 
   searchBox.addEventListener('input', render);
   load(true);
-  // Keep the order fresh when the admin logs new votes (every 2 minutes, only while the tab is visible).
-  setInterval(() => { if (!document.hidden) load(false); }, 120000);
+  // Pick up admin changes (approvals, codes, votes) by itself: every 30 s while visible, and the moment the tab is opened again.
+  setInterval(() => { if (!document.hidden) load(false); }, 30000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) load(false); });
+  window.addEventListener('focus', () => load(false));
 </script>
 
-<script src="visitor-counter.js"></script>
 </body>
 </html>

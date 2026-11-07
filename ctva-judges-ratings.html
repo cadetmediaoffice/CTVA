@@ -95,9 +95,6 @@ footer a{color:#9fd8ff;text-decoration:none;}
 .judge-row .jr-score.pending{color:rgba(255,255,255,0.3);font-size:12px;font-weight:600;font-family:'Barlow',sans-serif;}
 
 </style>
-<meta name="description" content="Cadet TV Personality Awards 2026 by Cadet Media Ghana: discovering and celebrating young broadcasting talent in Ghana's schools.">
-<meta name="theme-color" content="#0f3460">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><text y=%27.9em%27 font-size=%2790%27>🏆</text></svg>">
 </head>
 <body>
 
@@ -110,7 +107,6 @@ footer a{color:#9fd8ff;text-decoration:none;}
 <a class="" href="ctva-vote-results.html">Vote Results</a>
 <a class="" href="ctva-nominees.html">Nominees</a>
 <a class=" active" href="ctva-judges-ratings.html">Judges' Ratings</a>
-<a class="" href="ctva-archive.html">Archive</a>
 <a class="" href="ctva-vote-online.html">Vote Online</a>
 <a class="" href="ctva-contact.html">Contact Us</a>
 <a class="nav-register" href="https://cadetmediaoffice.github.io/TV-Personality-Awards/tv_awards_register.html" target="_blank" rel="noopener">Register</a>
@@ -144,10 +140,8 @@ footer a{color:#9fd8ff;text-decoration:none;}
   'Best Weather Presenter','Best Weather Reporter','Best Weather Producer'
 ];
   const container = document.getElementById('judgesContainer');
-  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-  function pic(n){const m=String(n.photoUrl||'').match(/\/d\/([\w-]+)|[?&]id=([\w-]+)/);return m?'https://lh3.googleusercontent.com/d/'+(m[1]||m[2])+'=w200':'';}
 
-  async function load(){
+  async function load(quiet){
     if (API_URL.includes('PASTE_YOUR')) {
       container.innerHTML = '<div class="empty">Backend URL not configured yet.</div>';
       return;
@@ -169,7 +163,7 @@ footer a{color:#9fd8ff;text-decoration:none;}
         const section = document.createElement('div');
         section.className = 'cat-section';
         const rows = list.map(n => {
-          const ph = `<div class="ph">${esc((n.name||'?').charAt(0).toUpperCase())}</div>`; const photo = pic(n) ? `<img src="${esc(pic(n))}" alt="${esc(n.name)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML=this.dataset.ph" data-ph="${esc(ph)}">` : ph;
+          const photo = n.photoUrl ? `<img src="${n.photoUrl}" alt="${n.name}" onerror="this.outerHTML='<div class=&quot;ph&quot;>${(n.name||'?').charAt(0).toUpperCase()}</div>'">` : `<div class="ph">${(n.name||'?').charAt(0).toUpperCase()}</div>`;
           const scoreHtml = (n.judgeScore === null || n.judgeScore === undefined)
             ? `<div class="jr-score pending">Not yet scored</div>`
             : `<div class="jr-score">${n.judgeScore}<span style="font-size:11px;opacity:.5;">/100</span></div>`;
@@ -177,8 +171,8 @@ footer a{color:#9fd8ff;text-decoration:none;}
             <div class="judge-row">
               ${photo}
               <div class="jr-info">
-                <div class="jr-name">${esc(n.name)}</div>
-                <div class="jr-school">${esc(n.school || '')}</div>
+                <div class="jr-name">${n.name}</div>
+                <div class="jr-school">${n.school || ''}</div>
               </div>
               ${scoreHtml}
             </div>
@@ -187,14 +181,15 @@ footer a{color:#9fd8ff;text-decoration:none;}
         section.innerHTML = `<h3>${cat}</h3>${rows}`;
         container.appendChild(section);
       });
-      if (!any) container.innerHTML = '<div class="empty">No nominees registered yet.</div>';
+      if (!any) container.innerHTML = '<div class="empty">No approved nominees yet.</div>';
     } catch (err) {
-      container.innerHTML = '<div class="empty">Could not load ratings. Please refresh.</div>';
+      if (!quiet) container.innerHTML = '<div class="empty">Could not load ratings. Please refresh.</div>';
     }
   }
   load();
+  setInterval(() => { if (!document.hidden) load(true); }, 30000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) load(true); });
 </script>
 
-<script src="visitor-counter.js"></script>
 </body>
 </html>

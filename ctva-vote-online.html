@@ -265,8 +265,15 @@ table.code-table td{padding:8px;border-bottom:1px solid rgba(255,255,255,0.06);}
   myRef.addEventListener('keydown',e=>{ if(e.key==='Enter') findMyCode(); });
 
   load();
+  // Pick up newly approved nominees and codes by itself (every 30 s while visible, and when the tab is reopened).
+  async function quietRefresh(){
+    if (document.hidden) return;
+    try { let l; try { l = await fetchList('getRecords'); } catch (e) { l = await fetchList('getAllNominees'); } allNominees = l; render(allNominees); } catch (e) {}
+  }
+  setInterval(quietRefresh, 30000);
+  document.addEventListener('visibilitychange', quietRefresh);
+  window.addEventListener('focus', quietRefresh);
 </script>
 
-<script src="visitor-counter.js"></script>
 </body>
 </html>
