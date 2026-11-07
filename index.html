@@ -165,6 +165,10 @@ footer a{color:#9fd8ff;text-decoration:none;}
 <meta property="og:description" content="Vote for Ghana's young broadcasting talent. Dial *920*5# and enter a contestant code. Voting closes 9 December 2026.">
 <meta property="og:url" content="https://cadetmediaoffice.github.io/CTVA/">
 <meta property="og:image" content="https://cadetmediaoffice.github.io/CTVA/ctva-share.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Cadet TV Personality Awards 2026: dial *920*5# to vote">
+<meta name="twitter:image" content="https://cadetmediaoffice.github.io/CTVA/ctva-share.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Event","name":"Cadet TV Personality Awards 2026","description":"Cadet Media Ghana celebrates young broadcasting talent in Ghana's schools. Public voting is open until 9 December 2026.","startDate":"2026-12-10","eventStatus":"https://schema.org/EventScheduled","eventAttendanceMode":"https://schema.org/OfflineEventAttendanceMode","location":{"@type":"Place","name":"Fire Academy and Training School","address":{"@type":"PostalAddress","addressLocality":"Accra","addressCountry":"GH"}},"organizer":{"@type":"Organization","name":"Cadet Media Ghana","url":"https://cadetmediaoffice.github.io/CTVA/"},"url":"https://cadetmediaoffice.github.io/CTVA/"}
@@ -346,21 +350,30 @@ footer a{color:#9fd8ff;text-decoration:none;}
   show(0);auto();
 })();
 
-(async function(){
+(function(){
   const bar=document.getElementById('ticker'),mv=document.getElementById('tkMove');
-  try{
-    const r=await fetch('https://script.google.com/macros/s/AKfycbxfTkqqjtjXLXekfT-fODrdU-F3SzroDSCogLnOcICh1ImtKeLKFJK7Xb6f2K4jsQ0/exec',{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'getTicker'})});
-    const d=await r.json();
-    const items=(d.items||[]).filter(Boolean);
-    if(d.status!=='ok'||d.enabled===false||!items.length)return;
-    // The list is written twice so the loop is seamless (the animation moves by exactly half).
-    [1,2].forEach(()=>items.forEach(t=>{const sp=document.createElement('span');sp.textContent=t;mv.appendChild(sp);}));
-    const chars=items.join('').length;
-    mv.style.setProperty('--dur',Math.max(18,Math.round(chars*0.22))+'s');
-    bar.hidden=false;
-  }catch(e){}
+  let current='';
+  async function refreshTicker(){
+    if(document.hidden)return;
+    try{
+      const r=await fetch('https://script.google.com/macros/s/AKfycbxfTkqqjtjXLXekfT-fODrdU-F3SzroDSCogLnOcICh1ImtKeLKFJK7Xb6f2K4jsQ0/exec',{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'getTicker'})});
+      const d=await r.json();
+      if(d.status!=='ok')return;
+      const items=(d.items||[]).filter(Boolean);
+      if(d.enabled===false||!items.length){bar.hidden=true;mv.innerHTML='';current='';return;}
+      const sig=items.join('\u0001');
+      if(sig===current){bar.hidden=false;return;}   // unchanged: leave the scrolling alone
+      current=sig;mv.innerHTML='';
+      // The list is written twice so the loop is seamless (the animation moves by exactly half).
+      [1,2].forEach(()=>items.forEach(t=>{const sp=document.createElement('span');sp.textContent=t;mv.appendChild(sp);}));
+      mv.style.setProperty('--dur',Math.max(18,Math.round(items.join('').length*0.22))+'s');
+      bar.hidden=false;
+    }catch(e){}
+  }
+  refreshTicker();
+  setInterval(refreshTicker,30000);                       // picks up admin edits by itself
+  document.addEventListener('visibilitychange',refreshTicker);
 })();
 </script>
-<script src="visitor-counter.js"></script>
 </body>
 </html>
