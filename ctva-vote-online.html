@@ -111,6 +111,12 @@ table.code-table td{padding:8px;border-bottom:1px solid rgba(255,255,255,0.06);}
 .ref-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;}
 .ref-row input{flex:1;min-width:220px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:13px 16px;border-radius:10px;font-size:15px;letter-spacing:1px;}
 .ref-row button{background:linear-gradient(45deg,#FFD700,#e6a800);color:#0f3460;border:none;padding:13px 22px;border-radius:10px;font-weight:800;cursor:pointer;font-family:'Barlow Condensed',sans-serif;letter-spacing:.5px;text-transform:uppercase;}
+.nalo-box{display:none;margin:22px 0 4px;padding:20px 18px;text-align:center;border:1.5px solid rgba(255,215,0,.45);border-radius:16px;background:linear-gradient(160deg,rgba(255,215,0,.14),rgba(255,215,0,.04));}
+.nalo-box .nb-t{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;letter-spacing:.6px;text-transform:uppercase;color:#FFD700;}
+.nalo-box .nb-s{font-size:14px;opacity:.85;margin:6px auto 14px;max-width:460px;line-height:1.5;}
+.nalo-box .btn{font-size:17px;padding:14px 30px;box-shadow:0 8px 22px rgba(255,215,0,.25);}
+.nalo-or{display:flex;align-items:center;gap:12px;margin:20px 0 4px;font-size:12px;letter-spacing:2px;text-transform:uppercase;opacity:.6;}
+.nalo-or::before,.nalo-or::after{content:"";flex:1;height:1px;background:rgba(255,255,255,.2);}
 </style>
 <meta name="description" content="Cadet TV Personality Awards 2026 by Cadet Media Ghana: discovering and celebrating young broadcasting talent in Ghana's schools.">
 <meta name="theme-color" content="#0f3460">
@@ -144,7 +150,14 @@ table.code-table td{padding:8px;border-bottom:1px solid rgba(255,255,255,0.06);}
 <div class="wrap">
 
 <div class="card">
-  <h2>How To Vote via SMS/USSD</h2>
+  <div class="nalo-box" id="naloBox">
+    <div class="nb-t">Vote online</div>
+    <div class="nb-s">Prefer the web? Vote for your favourite nominee on the official Nalo SmartCast voting platform.</div>
+    <a class="btn" id="naloBtn" href="#" target="_blank" rel="noopener noreferrer">Vote on Nalo SmartCast &rarr;</a>
+  </div>
+  <div class="nalo-or" id="naloOr" style="display:none">or vote by phone</div>
+
+  <h2 style="margin-top:14px;">How To Vote via SMS/USSD</h2>
   <ol class="steps">
     <li>Dial the official voting shortcode below from your phone.</li>
     <li>Enter the nominee's voting code (find it on the Nominees page or the table below).</li>
@@ -193,6 +206,14 @@ table.code-table td{padding:8px;border-bottom:1px solid rgba(255,255,255,0.06);}
 
 <script>
   const API_URL = 'https://script.google.com/macros/s/AKfycbxfTkqqjtjXLXekfT-fODrdU-F3SzroDSCogLnOcICh1ImtKeLKFJK7Xb6f2K4jsQ0/exec';
+  // Paste the official Nalo SmartCast voting page for CTVA 2026 between the quotes (must start with https://).
+  const NALO_VOTE_URL = 'https://www.smartcastonline.com/competitions/Cadet%20TV%20Personality%20Awards%202026/59633624-cfd9-418a-9065-48a02432a086';
+  (function(){
+    if (!/^https:\/\//i.test(NALO_VOTE_URL)) return;   // stays hidden until a real link is set
+    document.getElementById('naloBtn').href = NALO_VOTE_URL;
+    document.getElementById('naloBox').style.display = 'block';
+    document.getElementById('naloOr').style.display = 'flex';
+  })();
   let allNominees = [];
   function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 
