@@ -94,6 +94,17 @@ table.vr-table{width:100%;border-collapse:collapse;font-size:14px;color:#222;min
 }
 .vr-table td{padding:10px 8px;border:1px solid #dcdfe4;text-align:center;vertical-align:middle;}
 .vr-table td.c-name{text-align:left;padding-left:10px;}
+.ld-wrap{margin-top:20px;}
+.ld-h{color:#FFD700;font-weight:800;font-size:18px;margin:0 0 10px;text-align:center;}
+.ld-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;}
+.ld-card{background:#fff;border-radius:10px;padding:12px;display:flex;gap:12px;align-items:center;border-top:4px solid #FFD700;}
+.ld-card .vr-photo{width:76px;height:94px;margin:0;flex:none;border-radius:6px;}
+.ld-card .vr-photo.ph{font-size:30px;}
+.ld-cat{font-size:11.5px;font-weight:700;color:#00418a;text-transform:uppercase;letter-spacing:.3px;}
+.ld-name{font-size:16px;font-weight:800;color:#00264d;line-height:1.25;margin-top:2px;}
+.ld-sch{font-size:13px;color:#555;margin-top:1px;}
+.ld-sc{font-size:12.5px;color:#333;margin-top:6px;}
+.ld-sc b{color:#00418a;font-size:15px;}
 .vr-photo{width:52px;height:64px;object-fit:cover;border-radius:4px;display:block;margin:0 auto;background:#e9ecf1;}
 .vr-photo.ph{display:flex;align-items:center;justify-content:center;font-weight:700;font-size:22px;color:#00418a;}
 .vr-bar{position:relative;height:20px;background:#d9d9d9;border-radius:4px;overflow:hidden;min-width:100px;}
@@ -182,6 +193,8 @@ table.vr-table{width:100%;border-collapse:collapse;font-size:14px;color:#222;min
     <div class="vr-timer" id="voteTimer"></div>
     <div class="vr-updated" id="lastUpdated"></div>
 
+    <div class="ld-wrap" id="leadersBox"></div>
+
     <div class="vr-card">
       <div class="vr-scroll">
         <table class="vr-table">
@@ -192,7 +205,7 @@ table.vr-table{width:100%;border-collapse:collapse;font-size:14px;color:#222;min
         </table>
       </div>
       <p style="font-size:12.5px;color:#555;margin:10px 4px 2px;line-height:1.5;">
-        <b>How the final score works:</b> 50% Judges' score (marked out of 70, scaled to 100) + 50% Public vote. The public score is each nominee's votes compared with the leader in their category (leader = 100). Combined scores are <b>provisional</b> until voting closes on 9 December 2026.
+        <b>How the final score works:</b> 50% Judges' score (marked out of 70, scaled to 100) + 50% Public vote. The public score is votes out of 200 (200 votes = full marks); once a nominee passes 200, everyone in that category is scored against the category leader. Combined scores are <b>provisional</b> until voting closes on 31 December 2026.
       </p>
     </div>
   </div>
@@ -236,7 +249,7 @@ table.vr-table{width:100%;border-collapse:collapse;font-size:14px;color:#222;min
     <a href="https://cadetmediaoffice.github.io/TV-Personality-Awards/tv_awards_register.html">Register</a>
   </div>
   <div class="ft-brand">Cadet TV Personality Awards 2026 · Cadet Media Ghana</div>
-  <div>Voting: dial <b>*920*5#</b> · closes 9 December 2026, 11:59 PM GMT</div>
+  <div>Voting: dial <b>*920*5#</b> · closes 31 December 2026, 11:59 PM GMT</div>
   <div><a href="mailto:cadetmediaoffice@gmail.com">cadetmediaoffice@gmail.com</a></div>
   <div class="ft-sub">Empowering Youth Through Media</div>
 </footer>
@@ -340,10 +353,10 @@ table.vr-table{width:100%;border-collapse:collapse;font-size:14px;color:#222;min
   // Official scoring: 50% judges + 50% public vote (as announced to nominees and school heads).
   const JUDGE_W = 0.5, PUBLIC_W = 0.5;
   const JUDGE_MAX = 70;   // judges' sheet is marked 0-70; scaled to 100 before weighting
-  // Public score = votes as a share of the category leader's votes (leader = 100).
+  // Public score = votes divided by the larger of BAR_TARGET (200) or the category leader's votes.
   function combined(n, topVotes){
     if (n.judgeScore === null || n.judgeScore === undefined || isNaN(n.judgeScore) || Number(n.judgeScore) <= 0) return null;   // blank or 0 = not scored yet
-    const pub = topVotes > 0 ? ((n.votes || 0) / topVotes) * 100 : 0;
+    const pub = Math.min(100, ((n.votes || 0) / Math.max(topVotes, BAR_TARGET)) * 100);   // hybrid: 200 votes = 100, beyond that relative to the category leader
     return Math.round((JUDGE_W * Math.min(100, (Number(n.judgeScore) / JUDGE_MAX) * 100) + PUBLIC_W * pub) * 10) / 10;
   }
   // Rank a category by combined score once any judge has scored; otherwise by votes.
@@ -376,7 +389,32 @@ table.vr-table{width:100%;border-collapse:collapse;font-size:14px;color:#222;min
     </tr>`;
   }
 
+  // Leading nominee per category = highest combined score (judges + public votes).
+  function renderLeaders(){
+    const box = document.getElementById('leadersBox');
+    if (!box) return;
+    const cat = catSelect.value;
+    const order = CATEGORIES.concat(allNominees.map(n => n.category).filter(c => CATEGORIES.indexOf(c) === -1));
+    const cats = order.filter((c, i) => order.indexOf(c) === i && (cat === ALL || c === cat));
+    const cards = [];
+    cats.forEach(c => {
+      const list = rankList(allNominees.filter(n => n.category === c));
+      const top = list[0];
+      if (!top || top._comb == null || (top.votes || 0) <= 0) return;   // needs a judges' score AND at least one vote
+      cards.push(`<div class="ld-card">${photoHtml(top)}<div>
+        <div class="ld-cat">${esc(c)}</div>
+        <div class="ld-name">${esc(top.name)}</div>
+        <div class="ld-sch">${esc(top.school || '')}</div>
+        <div class="ld-sc">Combined <b>${top._comb.toFixed(1)}</b> · Judges ${esc(top.judgeScore)}/70 · ${(top.votes || 0).toLocaleString()} votes</div>
+      </div></div>`);
+    });
+    box.innerHTML = cards.length
+      ? '<div class="ld-h">🏆 Current Leaders <span style="font-weight:400;font-size:13px;opacity:.85">(judges + public votes, provisional)</span></div><div class="ld-grid">' + cards.join('') + '</div>'
+      : '';
+  }
+
   function renderTable(){
+    renderLeaders();
     const cat = catSelect.value;
 
     // ALL CATEGORIES: every nominee, grouped by category, ranked by votes inside each category.
@@ -463,9 +501,9 @@ table.vr-table{width:100%;border-collapse:collapse;font-size:14px;color:#222;min
   }
 
   // ---------- Voting deadline ----------
-  // Voting ends 9 December 2026 at 23:59:59 Ghana time. Ghana (Africa/Accra) is on GMT all year,
+  // Voting ends 31 December 2026 at 23:59:59 Ghana time. Ghana (Africa/Accra) is on GMT all year,
   // so this is the same instant as 23:59:59 UTC.
-  const VOTING_ENDS = new Date('2026-12-09T23:59:59Z');
+  const VOTING_ENDS = new Date('2026-12-31T23:59:59Z');
   const timerEl = document.getElementById('voteTimer');
 
   function fmt(d, tz){
