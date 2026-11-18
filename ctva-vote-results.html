@@ -140,6 +140,11 @@ table.vr-table{width:100%;border-collapse:collapse;font-size:14px;color:#222;min
   .vr-panel{padding:20px 10px 16px;}
   .vr-card{padding:8px;}
 }
+
+.ft-links{display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:center;margin:0 auto 10px;max-width:760px;}
+.ft-links a{font-size:13px;}
+.ft-brand{font-weight:700;color:#FFD700;letter-spacing:.3px;}
+.ft-sub{opacity:.7;margin-top:6px;font-size:12.5px;}
 </style>
 <meta name="description" content="Cadet TV Personality Awards 2026 by Cadet Media Ghana: discovering and celebrating young broadcasting talent in Ghana's schools.">
 <meta name="theme-color" content="#0f3460">
@@ -157,7 +162,7 @@ table.vr-table{width:100%;border-collapse:collapse;font-size:14px;color:#222;min
 <a class="" href="ctva-nominees.html">Nominees</a>
 <a class="" href="ctva-judges-ratings.html">Judges' Ratings</a>
 <a class="" href="ctva-archive.html">Archive</a>
-<a class="" href="ctva-vote-online.html">Vote Online</a>
+<a class="" href="ctva-vote-online.html">Voting Centre</a>
 <a class="" href="ctva-contact.html">Contact Us</a>
 <a class="nav-register" href="https://cadetmediaoffice.github.io/TV-Personality-Awards/tv_awards_register.html" target="_blank" rel="noopener">Register</a>
 
@@ -181,11 +186,14 @@ table.vr-table{width:100%;border-collapse:collapse;font-size:14px;color:#222;min
       <div class="vr-scroll">
         <table class="vr-table">
           <thead>
-            <tr><th style="width:48px">#</th><th style="width:84px">Photo</th><th>Name</th><th style="width:90px">Code</th><th style="width:96px">Votes</th><th style="width:150px">Progress</th></tr>
+            <tr><th style="width:48px">#</th><th style="width:84px">Photo</th><th>Name</th><th style="width:90px">Code</th><th style="width:96px">Votes</th><th style="width:150px">Progress</th><th style="width:84px">Judges<br><small>/70</small></th><th style="width:96px">Combined<br><small>/100</small></th></tr>
           </thead>
-          <tbody id="resultsBody"><tr><td colspan="6" class="loading">Loading…</td></tr></tbody>
+          <tbody id="resultsBody"><tr><td colspan="8" class="loading">Loading…</td></tr></tbody>
         </table>
       </div>
+      <p style="font-size:12.5px;color:#555;margin:10px 4px 2px;line-height:1.5;">
+        <b>How the final score works:</b> 50% Judges' score (marked out of 70, scaled to 100) + 50% Public vote. The public score is each nominee's votes compared with the leader in their category (leader = 100). Combined scores are <b>provisional</b> until voting closes on 9 December 2026.
+      </p>
     </div>
   </div>
 
@@ -221,8 +229,16 @@ table.vr-table{width:100%;border-collapse:collapse;font-size:14px;color:#222;min
 </div>
 
 <footer>
-  Cadet TV Personality Awards 2026 · Cadet Media Ghana ·
-  <a href="mailto:cadetmediaoffice@gmail.com">cadetmediaoffice@gmail.com</a>
+  <div class="ft-links">
+    <a href="index.html">Home</a><a href="ctva-about.html">About Us</a><a href="ctva-nominees.html">Nominees</a>
+    <a href="ctva-vote-online.html">Voting Centre</a><a href="ctva-vote-results.html">Vote Results</a>
+    <a href="ctva-judges-ratings.html">Judges' Ratings</a><a href="ctva-archive.html">Archive</a><a href="ctva-contact.html">Contact Us</a>
+    <a href="https://cadetmediaoffice.github.io/TV-Personality-Awards/tv_awards_register.html">Register</a>
+  </div>
+  <div class="ft-brand">Cadet TV Personality Awards 2026 · Cadet Media Ghana</div>
+  <div>Voting: dial <b>*920*5#</b> · closes 9 December 2026, 11:59 PM GMT</div>
+  <div><a href="mailto:cadetmediaoffice@gmail.com">cadetmediaoffice@gmail.com</a></div>
+  <div class="ft-sub">Empowering Youth Through Media</div>
 </footer>
 
 
@@ -321,19 +337,42 @@ table.vr-table{width:100%;border-collapse:collapse;font-size:14px;color:#222;min
   let allNominees = [];
 
   const ALL = '__all';
+  // Official scoring: 50% judges + 50% public vote (as announced to nominees and school heads).
+  const JUDGE_W = 0.5, PUBLIC_W = 0.5;
+  const JUDGE_MAX = 70;   // judges' sheet is marked 0-70; scaled to 100 before weighting
+  // Public score = votes as a share of the category leader's votes (leader = 100).
+  function combined(n, topVotes){
+    if (n.judgeScore === null || n.judgeScore === undefined || isNaN(n.judgeScore) || Number(n.judgeScore) <= 0) return null;   // blank or 0 = not scored yet
+    const pub = topVotes > 0 ? ((n.votes || 0) / topVotes) * 100 : 0;
+    return Math.round((JUDGE_W * Math.min(100, (Number(n.judgeScore) / JUDGE_MAX) * 100) + PUBLIC_W * pub) * 10) / 10;
+  }
+  // Rank a category by combined score once any judge has scored; otherwise by votes.
+  function rankList(list){
+    const top = Math.max.apply(null, list.map(n => n.votes || 0).concat([0]));
+    list.forEach(n => { n._comb = combined(n, top); });
+    const scored = list.some(n => n._comb !== null);
+    return list.slice().sort((a, b) => scored
+      ? ((b._comb === null ? -1 : b._comb) - (a._comb === null ? -1 : a._comb)) || ((b.judgeScore||0) - (a.judgeScore||0)) || byVotesDesc(a, b)
+      : byVotesDesc(a, b));
+  }
+  const BAR_TARGET = 200;   // votes that fill the progress bar (100%). Change this number any time.
 
   function rowHtml(n, rank, topVotes, showCat){
     const votes = n.votes || 0;
-    // Progress = this nominee's votes as a share of their category leader's votes (leader = 100%).
-    const pct = topVotes > 0 ? (votes / topVotes) * 100 : 0;
-    const pctTxt = pct.toFixed(1) + '%';
+    // Progress bar: BAR_TARGET votes = 100%. Voting can go past the target, so the figure keeps rising
+    // (e.g. 250 votes = 125%) while the bar itself stays full.
+    const pct = BAR_TARGET > 0 ? (votes / BAR_TARGET) * 100 : 0;
+    const pctTxt = (pct >= 100 ? Math.round(pct) : pct.toFixed(1)) + '%';
+    const barW = votes > 0 ? Math.min(100, Math.max(pct, 1.5)) : 0;   // thin sliver for anyone with votes
     return `<tr>
       <td>${rank}</td>
       <td>${photoHtml(n)}</td>
       <td class="c-name">${esc(n.name)} ( ${esc(n.school || '')} )${showCat ? '<div style="font-size:12px;color:#00418a;margin-top:2px;">' + esc(n.category) + '</div>' : ''}</td>
       <td>${n.naloCode ? esc(n.naloCode) : '<span style="opacity:.5">Pending</span>'}</td>
       <td>${votes.toLocaleString()}</td>
-      <td><div class="vr-bar ${pct < 30 ? 'low' : ''}"><i style="width:${pct.toFixed(1)}%"></i><b>${pctTxt}</b></div></td>
+      <td><div class="vr-bar ${pct < 30 ? 'low' : ''}"><i style="width:${barW.toFixed(1)}%"></i><b>${pctTxt}</b></div></td>
+      <td>${(n.judgeScore == null || Number(n.judgeScore) <= 0) ? '<span style="opacity:.5">—</span>' : esc(n.judgeScore)}</td>
+      <td><b>${n._comb == null ? '<span style="opacity:.5">—</span>' : n._comb.toFixed(1)}</b></td>
     </tr>`;
   }
 
@@ -345,7 +384,7 @@ table.vr-table{width:100%;border-collapse:collapse;font-size:14px;color:#222;min
       if (allNominees.length === 0) {
         leaderBanner.className = 'vr-leader none';
         leaderBanner.textContent = 'No nominees registered yet.';
-        resultsBody.innerHTML = '<tr><td colspan="6" class="empty">No nominees registered yet.</td></tr>';
+        resultsBody.innerHTML = '<tr><td colspan="8" class="empty">No nominees registered yet.</td></tr>';
         return;
       }
       leaderBanner.className = 'vr-leader none';
@@ -353,22 +392,22 @@ table.vr-table{width:100%;border-collapse:collapse;font-size:14px;color:#222;min
       const order = CATEGORIES.concat(allNominees.map(n => n.category).filter(c => CATEGORIES.indexOf(c) === -1));
       let html = '';
       order.filter((c, i) => order.indexOf(c) === i).forEach(c => {
-        const list = allNominees.filter(n => n.category === c).sort(byVotesDesc);
+        const list = rankList(allNominees.filter(n => n.category === c));
         if (!list.length) return;
         const topVotes = list[0].votes || 0;
-        html += `<tr><td colspan="6" style="background:#e8eef7;color:#00264d;font-weight:700;text-align:left;padding:9px 10px;">${esc(c)} <span style="font-weight:400;opacity:.7;">(${list.length})</span></td></tr>`;
+        html += `<tr><td colspan="8" style="background:#e8eef7;color:#00264d;font-weight:700;text-align:left;padding:9px 10px;">${esc(c)} <span style="font-weight:400;opacity:.7;">(${list.length})</span></td></tr>`;
         html += list.map((n, i) => rowHtml(n, i + 1, topVotes, false)).join('');
       });
       resultsBody.innerHTML = html;
       return;
     }
 
-    const list = allNominees.filter(n => n.category === cat).sort(byVotesDesc);
+    const list = rankList(allNominees.filter(n => n.category === cat));
 
     if (list.length === 0) {
       leaderBanner.className = 'vr-leader none';
       leaderBanner.textContent = 'No nominees in this category yet.';
-      resultsBody.innerHTML = '<tr><td colspan="6" class="empty">No nominees in this category yet.</td></tr>';
+      resultsBody.innerHTML = '<tr><td colspan="8" class="empty">No nominees in this category yet.</td></tr>';
       return;
     }
 
@@ -400,7 +439,7 @@ table.vr-table{width:100%;border-collapse:collapse;font-size:14px;color:#222;min
 
   async function loadRecords(first){
     if (API_URL.includes('PASTE_YOUR')) {
-      resultsBody.innerHTML = '<tr><td colspan="6" class="empty">Backend URL not configured yet.</td></tr>';
+      resultsBody.innerHTML = '<tr><td colspan="8" class="empty">Backend URL not configured yet.</td></tr>';
       return;
     }
     try {
@@ -418,7 +457,7 @@ table.vr-table{width:100%;border-collapse:collapse;font-size:14px;color:#222;min
       if (first) {
         leaderBanner.className = 'vr-leader none';
         leaderBanner.textContent = 'Could not load results. Please refresh.';
-        resultsBody.innerHTML = '<tr><td colspan="6" class="empty">Could not load results. Please refresh.</td></tr>';
+        resultsBody.innerHTML = '<tr><td colspan="8" class="empty">Could not load results. Please refresh.</td></tr>';
       }
     }
   }
@@ -463,8 +502,10 @@ table.vr-table{width:100%;border-collapse:collapse;font-size:14px;color:#222;min
 
   catSelect.addEventListener('change', renderTable);
   loadRecords(true);
-  // Re-check for newly logged votes every 2 minutes while the tab is open and visible.
-  setInterval(() => { if (!document.hidden) loadRecords(false); }, 120000);
+  // Pick up admin changes (approvals, codes, votes) by itself: every 30 s while visible, and the moment the tab is opened again.
+  setInterval(() => { if (!document.hidden) loadRecords(false); }, 30000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) loadRecords(false); });
+  window.addEventListener('focus', () => loadRecords(false));
 
   // ---------- Check My Result ----------
   const refInput = document.getElementById('refInput');
@@ -546,6 +587,5 @@ table.vr-table{width:100%;border-collapse:collapse;font-size:14px;color:#222;min
   refInput.addEventListener('keydown', e => { if (e.key === 'Enter') doLookup(); });
 </script>
 
-<script src="visitor-counter.js"></script>
 </body>
 </html>
