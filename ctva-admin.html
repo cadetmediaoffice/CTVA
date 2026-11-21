@@ -124,6 +124,7 @@ table.ex-table{width:100%;border-collapse:collapse;font-size:13.5px;}
       <button class="tab-btn" data-tab="export">Export</button>
       <button class="tab-btn" data-tab="import">Import votes</button>
       <button class="tab-btn" data-tab="visibility">Results visibility</button>
+      <button class="tab-btn" data-tab="naad">NAAD link</button>
       <button class="tab-btn" data-tab="ticker">Ticker</button>
     </div>
 
@@ -151,6 +152,23 @@ table.ex-table{width:100%;border-collapse:collapse;font-size:13.5px;}
       <div class="log-status" id="tkMsg"></div>
     </div>
 
+
+
+    <div class="pane" id="pane-naad">
+      <p style="opacity:.75;font-size:13.5px;line-height:1.6;margin-bottom:12px;">Give every approved nominee a <b>NAAD Account ID</b> for the NAAD Student Portal, then send their Cadet TV Personality Awards results to their NAAD record. Do the steps in order.</p>
+      <div id="naadStat" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:10px;padding:12px 14px;margin-bottom:12px;font-size:14px;">Loading…</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;">
+        <button class="ex-btn" id="naadCreate">1. Create NAAD accounts</button>
+        <button class="ex-btn" id="naadMail">2. Email parents their login</button>
+        <button class="ex-btn" id="naadCsv">Download list (CSV)</button>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;">
+        <button class="ex-btn" id="naadPush">3. Send results to NAAD (provisional)</button>
+        <button class="ex-btn" id="naadPushFinal" style="background:linear-gradient(45deg,#FFD700,#e6a800);color:#000;">3b. Send FINAL results (winners)</button>
+      </div>
+      <div class="log-status" id="naadMsg"></div>
+      <div id="naadList" style="margin-top:12px;"></div>
+    </div>
 
     <div class="pane" id="pane-visibility">
       <p style="opacity:.75;font-size:13.5px;line-height:1.6;margin-bottom:12px;">Choose whether the public can see vote counts on the website (Vote Results, Nominees and a nominee's own result check). Hidden counts are removed on the server, so nobody can find them in the page. <b>You still see everything in this admin.</b> This does not change the SmartCast / Nalo platform.</p>
@@ -278,7 +296,7 @@ table.ex-table{width:100%;border-collapse:collapse;font-size:13.5px;}
     if (document.hidden || dashView.style.display !== 'block') return;
     const el = document.activeElement;
     if (el && /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)) return;
-    if (currentTab === 'logvotes' || currentTab === 'judgescores' || currentTab === 'ticker' || currentTab === 'import' || currentTab === 'visibility') return;
+    if (currentTab === 'logvotes' || currentTab === 'judgescores' || currentTab === 'ticker' || currentTab === 'import' || currentTab === 'visibility' || currentTab === 'naad') return;
     try {
       const data = await api('getAllAdmin');
       if (data.status !== 'ok') return;
@@ -303,7 +321,11 @@ table.ex-table{width:100%;border-collapse:collapse;font-size:13.5px;}
       document.getElementById('pane-ticker').classList.remove('active');
       document.getElementById('pane-import').classList.remove('active');
       document.getElementById('pane-visibility').classList.remove('active');
-      if (currentTab === 'visibility') {
+      document.getElementById('pane-naad').classList.remove('active');
+      if (currentTab === 'naad') {
+        document.getElementById('pane-naad').classList.add('active');
+        loadNaad();
+      } else if (currentTab === 'visibility') {
         document.getElementById('pane-visibility').classList.add('active');
         loadVisibility();
       } else if (currentTab === 'import') {
@@ -722,6 +744,53 @@ table.ex-table{width:100%;border-collapse:collapse;font-size:13.5px;}
       impMsg.className = 'log-status ok'; impMsg.textContent = 'Saved — ' + d.applied + ' nominee' + (d.applied === 1 ? '' : 's') + ' updated. The public pages will show the new totals within a minute.';
       await loadAll();
     } catch (e) { impMsg.className = 'log-status err'; impMsg.textContent = 'Network error — nothing may have been saved; press Check again.'; impApply.disabled = false; }
+  });
+
+  // ---- NAAD link tab ----
+  let naadData = null;
+  function naadMsg(ok, t){ const m = document.getElementById('naadMsg'); m.className = 'log-status ' + (ok === null ? '' : ok ? 'ok' : 'err'); m.textContent = t; }
+  async function loadNaad(){
+    const box = document.getElementById('naadStat');
+    try {
+      const d = await api('naadStatus');
+      if (d.status !== 'ok') { box.textContent = 'Could not load. Deploy the latest Code.gs as a new version first.'; return; }
+      naadData = d;
+      box.innerHTML = (d.configured ? '<span style="color:#7CFC9A">● NAAD link is set up</span>' : '<span style="color:#FFB3B3">● Not set up: add NAAD_URL and NAAD_SECRET in Script Properties</span>') +
+        '<br>Approved nominees: <b>' + d.approved + '</b> · With NAAD account: <b>' + d.withId + '</b> · Parents emailed: <b>' + d.emailed + '</b>';
+      document.getElementById('naadList').innerHTML = d.nominees.length ? '<table class="ex-table"><thead><tr><th>Nominee</th><th>Category</th><th>NAAD ID</th><th>Emailed</th></tr></thead><tbody>' +
+        d.nominees.map(n => '<tr><td><b>' + exEsc(n.name) + '</b><br><span style="opacity:.6;font-size:12px;">' + exEsc(n.school) + '</span></td><td style="font-size:12.5px;">' + exEsc(n.category) + '</td><td style="font-family:monospace;font-size:12px;">' + (n.naadId ? exEsc(n.naadId) : '—') + '</td><td>' + (n.emailed ? '✅' : '—') + '</td></tr>').join('') + '</tbody></table>' : '';
+    } catch (e) { box.textContent = 'Network error — try again.'; }
+  }
+  async function naadRun(action, extra, label, busyBtn){
+    busyBtn.disabled = true; naadMsg(null, label + '…');
+    try { const d = await api(action, extra || {}); busyBtn.disabled = false;
+      if (d.status !== 'ok') { naadMsg(false, d.message || 'Failed.'); return null; }
+      return d;
+    } catch (e) { busyBtn.disabled = false; naadMsg(false, 'Network error — try again.'); return null; }
+  }
+  document.getElementById('naadCreate').addEventListener('click', async e => {
+    const d = await naadRun('naadCreateAccounts', {}, 'Creating accounts', e.target); if (!d) return;
+    naadMsg(true, d.message || ('Created ' + d.created + ' NAAD account' + (d.created === 1 ? '' : 's') + '.')); loadNaad();
+  });
+  document.getElementById('naadMail').addEventListener('click', async e => {
+    if (!confirm('Email each parent/guardian their child\'s NAAD Account ID and one-time activation code? (Only those not already emailed.)')) return;
+    const d = await naadRun('naadEmailParents', {}, 'Sending emails', e.target); if (!d) return;
+    naadMsg(true, 'Sent ' + d.sent + ' email' + (d.sent === 1 ? '' : 's') + '.' + (d.failed && d.failed.length ? ' Failed: ' + d.failed.join(', ') + '.' : '') + (d.remainingToEmail > 0 ? ' ' + d.remainingToEmail + ' left (daily email limit) — press again tomorrow.' : '')); loadNaad();
+  });
+  document.getElementById('naadPush').addEventListener('click', async e => {
+    const d = await naadRun('naadPushResults', { final: false }, 'Sending results', e.target); if (!d) return;
+    naadMsg(true, 'Sent to NAAD: ' + d.added + ' new, ' + d.updated + ' updated. Everyone is recorded as "Nominee" until you send FINAL results.');
+  });
+  document.getElementById('naadPushFinal').addEventListener('click', async e => {
+    if (!confirm('Send FINAL results? Winners and runners-up will appear on students\' NAAD profiles. Only do this after voting has closed and every judge score is in.')) return;
+    const d = await naadRun('naadPushResults', { final: true }, 'Sending final results', e.target); if (!d) return;
+    naadMsg(true, 'Final results sent to NAAD: ' + d.added + ' new, ' + d.updated + ' updated.');
+  });
+  document.getElementById('naadCsv').addEventListener('click', () => {
+    if (!naadData) { naadMsg(false, 'Open this tab first.'); return; }
+    const q = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+    const csv = ['Name,School,Category,Parent email,NAAD ID,Activation code'].concat(naadData.nominees.map(n => [n.name, n.school, n.category, n.parentEmail, n.naadId, n.naadCode].map(q).join(','))).join('\n');
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = 'NAAD-accounts.csv'; document.body.appendChild(a); a.click(); a.remove();
   });
 
   // ---- Results visibility tab ----
