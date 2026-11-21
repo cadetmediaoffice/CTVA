@@ -163,7 +163,7 @@ tr.leader .vote-num{color:#FFD700;}
 <div class="page-hero">
   <div class="badge">Meet The Field</div>
   <h1>Our<br><span>Nominees</span></h1>
-  <p class="sub">Every registered nominee by category, ranked by votes. The leader is always at the top.</p>
+  <p class="sub">Every registered nominee by category. When vote counts are shown, the leader is always at the top.</p>
 </div>
 <div class="wrap">
   <div class="toolbar">
@@ -284,6 +284,7 @@ tr.leader .vote-num{color:#FFD700;}
     return (b.votes || 0) - (a.votes || 0) || String(a.name).localeCompare(String(b.name));
   }
 
+  let resultsVisible = true;
   function render(){
     const q = searchBox.value.trim().toLowerCase();
     container.innerHTML = '';
@@ -291,7 +292,7 @@ tr.leader .vote-num{color:#FFD700;}
 
     CATEGORIES.forEach(cat => {
       // Rank is decided from the FULL category list, then the search only filters what is shown.
-      const ranked = allNominees.filter(n => n.category === cat).sort(byVotesDesc);
+      const ranked = allNominees.filter(n => n.category === cat).sort(resultsVisible ? byVotesDesc : (a, b) => String(a.name).localeCompare(String(b.name)));
       if (ranked.length === 0) return;
       const topVotes = ranked[0].votes || 0;
 
@@ -302,11 +303,11 @@ tr.leader .vote-num{color:#FFD700;}
       any = true;
 
       const rows = shown.map(({ n, rank }) => {
-        const isLeader = rank === 1 && topVotes > 0;
+        const isLeader = resultsVisible && rank === 1 && topVotes > 0;
         const hasCode = !!n.naloCode;
         return `
           <tr class="${isLeader ? 'leader' : ''}">
-            <td class="c-rank">${rank}</td>
+            <td class="c-rank">${resultsVisible ? rank : ''}</td>
             <td class="c-photo">${avatar(n)}</td>
             <td>
               <div class="n-name">${esc(n.name)}${isLeader ? '<span class="lead-tag">👑 Leading</span>' : ''}</div>
@@ -314,7 +315,7 @@ tr.leader .vote-num{color:#FFD700;}
             </td>
             <td class="c-school">${esc(n.school || '')}</td>
             <td><span class="code ${hasCode ? '' : 'pending'}">${hasCode ? esc(n.naloCode) : 'Pending'}</span></td>
-            <td class="c-votes"><span class="vote-num">${Number(n.votes || 0).toLocaleString()}</span><span class="vote-lbl">votes</span></td>
+            ${resultsVisible ? `<td class="c-votes"><span class="vote-num">${Number(n.votes || 0).toLocaleString()}</span><span class="vote-lbl">votes</span></td>` : ''}
           </tr>`;
       }).join('');
 
@@ -325,7 +326,7 @@ tr.leader .vote-num{color:#FFD700;}
         <table class="nom-table">
           <thead><tr>
             <th class="c-rank">#</th><th class="c-photo">Photo</th><th>Nominee</th>
-            <th class="c-school">School</th><th>Voting Code</th><th class="c-votes">Votes</th>
+            <th class="c-school">School</th><th>Voting Code</th>${resultsVisible ? '<th class="c-votes">Votes</th>' : ''}
           </tr></thead>
           <tbody>${rows}</tbody>
         </table>`;
@@ -352,7 +353,8 @@ tr.leader .vote-num{color:#FFD700;}
       });
       const data = await res.json();
       allNominees = (data.nominees || []).filter(n => n.status !== 'rejected');
-      if (data.lastUpdated) lastUpdatedEl.textContent = 'Votes last updated: ' + data.lastUpdated;
+      resultsVisible = data.resultsVisible !== false;
+      lastUpdatedEl.textContent = (resultsVisible && data.lastUpdated) ? 'Votes last updated: ' + data.lastUpdated : (resultsVisible ? '' : 'Vote counts are hidden for now. Voting is still open.');
       render();
     } catch (err) {
       if (first) container.innerHTML = '<div class="empty">Could not load nominees. Please refresh.</div>';

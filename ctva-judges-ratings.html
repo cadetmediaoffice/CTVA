@@ -179,7 +179,7 @@ footer a{color:#9fd8ff;text-decoration:none;}
           const photo = n.photoUrl ? `<img src="${n.photoUrl}" alt="${n.name}" onerror="this.outerHTML='<div class=&quot;ph&quot;>${(n.name||'?').charAt(0).toUpperCase()}</div>'">` : `<div class="ph">${(n.name||'?').charAt(0).toUpperCase()}</div>`;
           const scoreHtml = (n.judgeScore === null || n.judgeScore === undefined)
             ? `<div class="jr-score pending">Not yet scored</div>`
-            : `<div class="jr-score">${n.judgeScore}<span style="font-size:11px;opacity:.5;">/100</span></div>`;
+            : `<div class="jr-score">${n.judgeScore}<span style="font-size:11px;opacity:.5;">/70</span></div>`;
           return `
             <div class="judge-row">
               ${photo}
